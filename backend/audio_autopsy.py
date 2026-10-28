@@ -17,7 +17,7 @@ from __future__ import annotations
 import hashlib
 import os
 import re
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 try:
     from elevenlabs.client import ElevenLabs
@@ -81,6 +81,15 @@ class AudioAutopsySynthesizer:
         self.cache_dir = cache_dir
         os.makedirs(cache_dir, exist_ok=True)
         self.client = ElevenLabs(api_key=self.api_key) if (self.api_key and ELEVENLABS_AVAILABLE) else None
+
+    def synthesize_autopsy_eulogy(
+        self,
+        repo_id: str,
+        text: str,
+        force_replay: bool = False,
+    ) -> Dict[str, Any]:
+        """Alias for synthesize_autopsy for eulogy endpoint compatibility."""
+        return self.synthesize_autopsy(repo_id, text, force_replay=force_replay)
 
     def synthesize_autopsy(
         self,
