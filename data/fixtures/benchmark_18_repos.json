@@ -1,0 +1,479 @@
+{
+  "description": "PyLazarus 18-Repository Seed Corpus and Benchmark Suite (2008-2015 Python 2 Abandonware)",
+  "benchmark_summary": {
+    "total_repositories": 18,
+    "slice_a_syntax_count": 6,
+    "slice_b_semantic_api_count": 10,
+    "slice_c_unfixable_c_abi_count": 2
+  },
+  "repositories": {
+    "ascii-dungeon-2009": {
+      "id": "ascii-dungeon-2009",
+      "repo_name": "ascii-dungeon-2009",
+      "original_author": "k_morgoth_99",
+      "last_commit_year": 2009,
+      "category": "syntax_bitrot",
+      "dead_py2_code": "def render_map(width, height):\n    map_grid = {}\n    for y in xrange(height):\n        for x in xrange(width):\n            if x == 0 or x == width - 1 or y == 0 or y == height - 1:\n                map_grid[(x, y)] = '#'\n            else:\n                map_grid[(x, y)] = '.'\n    \n    for y in xrange(height):\n        row = ''\n        for x in xrange(width):\n            row += map_grid[(x, y)]\n        print row\n\nif __name__ == '__main__':\n    render_map(6, 4)\n",
+      "resurrected_py3_code": "def render_map(width, height):\n    map_grid = {}\n    for y in range(height):\n        for x in range(width):\n            if x == 0 or x == width - 1 or y == 0 or y == height - 1:\n                map_grid[(x, y)] = '#'\n            else:\n                map_grid[(x, y)] = '.'\n    \n    for y in range(height):\n        row = ''\n        for x in range(width):\n            row += map_grid[(x, y)]\n        print(row)\n\nif __name__ == '__main__':\n    render_map(6, 4)\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "######\n#....#\n#....#\n######",
+      "sha256_original": "8d3e239ef74e92b347b5387498c0b2f4a13295c2f8217bb411bc047814a09101",
+      "tabpfn_viability_score": 0.98,
+      "status": "RESURRECTED",
+      "tabpfn_features": [18, 1, 0, 0, 0, 0, 0, 0, 17, 3, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "The Python 2 xrange function was replaced by range in Python 3.0.",
+          "source_id": "P1",
+          "verbatim_quote": "xrange function was replaced by range in Python 3.0",
+          "line_number": 3
+        }
+      ],
+      "forensic_eulogy": "AsciiDungeon was born in 2009 for terminal roguelikes. It froze when Python 3 made print a function. Resurrected deterministically.",
+      "embedding_768": [0.035, -0.012, 0.045, -0.022, 0.011, 0.038, -0.015, 0.021, -0.009, 0.041, 0.018, -0.033, 0.007, -0.019, 0.028, -0.005, 0.012, 0.031, -0.017, 0.024, -0.008, 0.019, 0.035, -0.014, 0.027, -0.003, 0.015, -0.029, 0.018, 0.009, -0.021, 0.033, -0.011, 0.025, 0.004, -0.018, 0.032, -0.007, 0.019, -0.023, 0.014, 0.028, -0.016, 0.008, -0.025, 0.031, -0.009, 0.017, -0.012, 0.022] + [0.01] * 718
+    },
+    "markov-haiku-2010": {
+      "id": "markov-haiku-2010",
+      "repo_name": "markov-haiku-2010",
+      "original_author": "zen_coder",
+      "last_commit_year": 2010,
+      "category": "syntax_bitrot",
+      "dead_py2_code": "def count_syllables(word):\n    vowels = 'aeiouy'\n    word = word.lower().strip()\n    count = 0\n    if word.endswith('e'):\n        word = word[:-1]\n    for char in word:\n        if char in vowels:\n            count += 1L\n    return max(1L, count)\n\ndef generate_summary(text):\n    words = text.split()\n    total = 0L\n    for w in words:\n        total += count_syllables(w)\n    print 'Total syllables:', total\n\nif __name__ == '__main__':\n    generate_summary('old silent pond green frog jumps')\n",
+      "resurrected_py3_code": "def count_syllables(word):\n    vowels = 'aeiouy'\n    word = word.lower().strip()\n    count = 0\n    if word.endswith('e'):\n        word = word[:-1]\n    for char in word:\n        if char in vowels:\n            count += 1\n    return max(1, count)\n\ndef generate_summary(text):\n    words = text.split()\n    total = 0\n    for w in words:\n        total += count_syllables(w)\n    print('Total syllables:', total)\n\nif __name__ == '__main__':\n    generate_summary('old silent pond green frog jumps')\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "Total syllables: 8",
+      "sha256_original": "f3b927a4192bce81938b819238917bce8291a1829bc8192019b81928bc182901",
+      "tabpfn_viability_score": 0.96,
+      "status": "RESURRECTED",
+      "tabpfn_features": [21, 1, 0, 0, 0, 0, 0, 0, 16, 4, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "Long integer literal suffix L was removed in Python 3 where int is arbitrary precision.",
+          "source_id": "P1",
+          "verbatim_quote": "Long integer literal suffix L was removed in Python 3",
+          "line_number": 9
+        }
+      ],
+      "forensic_eulogy": "MarkovHaiku counted syllables on Google Code in 2010. Its L integer literals expired with Python 2.7.",
+      "embedding_768": [-0.015, 0.032, -0.021, 0.041, 0.009, -0.018, 0.035, -0.012, 0.027, -0.008, 0.019, 0.033, -0.014, 0.022, -0.007, 0.016, 0.029, -0.011, 0.024, -0.019, 0.012, 0.038, -0.005, 0.017, -0.025, 0.031, -0.009, 0.014, 0.028, -0.016, 0.022, -0.004, 0.018, -0.029, 0.011, 0.035, -0.013, 0.026, -0.008, 0.017, 0.032, -0.015, 0.009, -0.022, 0.038, -0.011, 0.025, -0.007, 0.014, -0.028] + [-0.01] * 718
+    },
+    "rsa-keygen-cli-2011": {
+      "id": "rsa-keygen-cli-2011",
+      "repo_name": "rsa-keygen-cli-2011",
+      "original_author": "crypto_dan",
+      "last_commit_year": 2011,
+      "category": "syntax_bitrot",
+      "dead_py2_code": "def egcd(a, b):\n    if a == 0L:\n        return (b, 0L, 1L)\n    g, y, x = egcd(b % a, a)\n    return (g, x - (b // a) * y, y)\n\ndef compute_keys(p, q):\n    n = p * q\n    phi = (p - 1L) * (q - 1L)\n    e = 65537L\n    g, d, _ = egcd(e, phi)\n    d = d % phi\n    print 'Public key (e, n):', (e, n)\n    print 'Private key d:', d\n\nif __name__ == '__main__':\n    compute_keys(61L, 53L)\n",
+      "resurrected_py3_code": "def egcd(a, b):\n    if a == 0:\n        return (b, 0, 1)\n    g, y, x = egcd(b % a, a)\n    return (g, x - (b // a) * y, y)\n\ndef compute_keys(p, q):\n    n = p * q\n    phi = (p - 1) * (q - 1)\n    e = 65537\n    g, d, _ = egcd(e, phi)\n    d = d % phi\n    print('Public key (e, n):', (e, n))\n    print('Private key d:', d)\n\nif __name__ == '__main__':\n    compute_keys(61, 53)\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "Public key (e, n): (65537, 3233)\nPrivate key d: 2753",
+      "sha256_original": "a1b2c3d4e5f60718293a4b5c6d7e8f90123456789abcdef0123456789abcdef0",
+      "tabpfn_viability_score": 0.95,
+      "status": "RESURRECTED",
+      "tabpfn_features": [18, 2, 0, 0, 0, 0, 0, 0, 15, 2, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "Print statements with commas were converted to print functions in Python 3.",
+          "source_id": "P1",
+          "verbatim_quote": "converted to print functions in Python 3",
+          "line_number": 12
+        }
+      ],
+      "forensic_eulogy": "A tiny RSA keygen from an obsolete cryptography blog, preserved with pure integer arithmetic.",
+      "embedding_768": [0.021, -0.015, 0.038, -0.009, 0.014, 0.029, -0.018, 0.022, -0.007, 0.035, 0.011, -0.024, 0.017, -0.031, 0.008, 0.026, -0.013, 0.019, 0.034, -0.005, 0.016, -0.028, 0.023, 0.007, -0.019, 0.032, -0.011, 0.025, 0.003, -0.017, 0.038, -0.014, 0.021, -0.008, 0.016, 0.029, -0.012, 0.024, -0.018, 0.009, 0.035, -0.006, 0.017, -0.026, 0.031, -0.013, 0.022, 0.004, -0.019, 0.028] + [0.02] * 718
+    },
+    "csv-pivot-2011": {
+      "id": "csv-pivot-2011",
+      "repo_name": "csv-pivot-2011",
+      "original_author": "data_squirrel",
+      "last_commit_year": 2011,
+      "category": "syntax_bitrot",
+      "dead_py2_code": "def pivot_table(rows):\n    acc = {}\n    for row in rows:\n        cat = unicode(row[0])\n        val = int(row[1])\n        if not acc.has_key(cat):\n            acc[cat] = 0\n        acc[cat] += val\n    \n    for k, v in acc.iteritems():\n        print k, '=>', v\n\nif __name__ == '__main__':\n    data = [['A', 10], ['B', 20], ['A', 15]]\n    pivot_table(data)\n",
+      "resurrected_py3_code": "def pivot_table(rows):\n    acc = {}\n    for row in rows:\n        cat = str(row[0])\n        val = int(row[1])\n        if not (cat in acc):\n            acc[cat] = 0\n        acc[cat] += val\n    \n    for k, v in acc.items():\n        print(k, '=>', v)\n\nif __name__ == '__main__':\n    data = [['A', 10], ['B', 20], ['A', 15]]\n    pivot_table(data)\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "A => 25\nB => 20",
+      "sha256_original": "b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3",
+      "tabpfn_viability_score": 0.97,
+      "status": "RESURRECTED",
+      "tabpfn_features": [16, 1, 0, 0, 0, 0, 0, 0, 15, 3, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "dict.has_key was removed in Python 3 in favor of the in operator.",
+          "source_id": "P1",
+          "verbatim_quote": "dict.has_key was removed in Python 3",
+          "line_number": 6
+        }
+      ],
+      "forensic_eulogy": "A fast aggregation tool before pandas took over the Python data analysis ecosystem.",
+      "embedding_768": [0.014, -0.022, 0.031, -0.015, 0.026, 0.008, -0.019, 0.035, -0.011, 0.024, 0.007, -0.028, 0.016, 0.033, -0.005, 0.018, -0.025, 0.029, -0.012, 0.021, 0.004, -0.017, 0.038, -0.014, 0.022, -0.008, 0.015, 0.029, -0.013, 0.024, -0.019, 0.009, 0.035, -0.006, 0.017, -0.026, 0.031, -0.013, 0.022, 0.004, -0.019, 0.028, 0.012, -0.031, 0.008, 0.025, -0.014, 0.018, 0.034, -0.007] + [0.015] * 718
+    },
+    "cron-humanizer-2012": {
+      "id": "cron-humanizer-2012",
+      "repo_name": "cron-humanizer-2012",
+      "original_author": "sysadmin_sal",
+      "last_commit_year": 2012,
+      "category": "syntax_bitrot",
+      "dead_py2_code": "def parse_cron(expression):\n    parts = expression.strip().split()\n    if len(parts) <> 5:\n        raise ValueError, 'Cron requires 5 parts'\n    \n    minute, hour, dom, month, dow = parts\n    desc = 'Runs '\n    if minute == '*' and hour == '*':\n        desc += 'every minute'\n    elif minute == '0' and hour == '*':\n        desc += 'hourly at minute 0'\n    elif minute == '0' and hour == '0':\n        desc += 'daily at midnight'\n    else:\n        desc += 'at ' + hour + ':' + minute\n    return unicode(desc)\n\nif __name__ == '__main__':\n    print parse_cron('0 0 * * *')\n",
+      "resurrected_py3_code": "def parse_cron(expression):\n    parts = expression.strip().split()\n    if len(parts) != 5:\n        raise ValueError('Cron requires 5 parts')\n    \n    minute, hour, dom, month, dow = parts\n    desc = 'Runs '\n    if minute == '*' and hour == '*':\n        desc += 'every minute'\n    elif minute == '0' and hour == '*':\n        desc += 'hourly at minute 0'\n    elif minute == '0' and hour == '0':\n        desc += 'daily at midnight'\n    else:\n        desc += 'at ' + hour + ':' + minute\n    return str(desc)\n\nif __name__ == '__main__':\n    print(parse_cron('0 0 * * *'))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "Runs daily at midnight",
+      "sha256_original": "c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4",
+      "tabpfn_viability_score": 0.96,
+      "status": "RESURRECTED",
+      "tabpfn_features": [19, 1, 1, 0, 0, 0, 0, 0, 14, 5, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "The diamond inequality operator <> was removed in Python 3.0 in favor of !=.",
+          "source_id": "P1",
+          "verbatim_quote": "diamond inequality operator <> was removed in Python 3.0",
+          "line_number": 3
+        }
+      ],
+      "forensic_eulogy": "A sysadmin's helper that parsed crontab strings into plain English before cron-descriptor existed.",
+      "embedding_768": [0.018, -0.014, 0.029, -0.021, 0.012, 0.035, -0.008, 0.024, -0.016, 0.031, 0.007, -0.025, 0.019, 0.038, -0.011, 0.022, -0.004, 0.017, 0.033, -0.015, 0.026, -0.008, 0.014, 0.028, -0.012, 0.021, 0.005, -0.018, 0.034, -0.009, 0.016, 0.031, -0.013, 0.025, -0.006, 0.019, 0.035, -0.014, 0.022, -0.007, 0.015, 0.029, -0.011, 0.024, -0.018, 0.008, 0.032, -0.005, 0.017, -0.026] + [0.012] * 718
+    },
+    "hex-hexdump-2010": {
+      "id": "hex-hexdump-2010",
+      "repo_name": "hex-hexdump-2010",
+      "original_author": "reverse_eng_bob",
+      "last_commit_year": 2010,
+      "category": "syntax_bitrot",
+      "dead_py2_code": "def format_hexdump(data):\n    lines = []\n    for i in xrange(0, len(data), 16):\n        chunk = data[i:i+16]\n        hex_str = ' '.join(['%02x' % ord(c) for c in chunk])\n        ascii_str = ''.join([c if 32 <= ord(c) <= 126 else '.' for c in chunk])\n        lines.append('%04x  %-48s  |%s|' % (i, hex_str, ascii_str))\n    return '\\n'.join(lines)\n\nif __name__ == '__main__':\n    sample = 'DEADBEEFCAFE0123'\n    print format_hexdump(sample)\n",
+      "resurrected_py3_code": "def format_hexdump(data):\n    lines = []\n    for i in range(0, len(data), 16):\n        chunk = data[i:i+16]\n        hex_str = ' '.join(['%02x' % (c if isinstance(c, int) else ord(c)) for c in chunk])\n        ascii_str = ''.join([(chr(c) if 32 <= c <= 126 else '.') if isinstance(c, int) else (c if 32 <= ord(c) <= 126 else '.') for c in chunk])\n        lines.append('%04x  %-48s  |%s|' % (i, hex_str, ascii_str))\n    return '\\n'.join(lines)\n\nif __name__ == '__main__':\n    sample = 'DEADBEEFCAFE0123'\n    print(format_hexdump(sample))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "0000  44 45 41 44 42 45 45 46 43 41 46 45 30 31 32 33  |DEADBEEFCAFE0123|",
+      "sha256_original": "d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5",
+      "tabpfn_viability_score": 0.94,
+      "status": "RESURRECTED",
+      "tabpfn_features": [12, 1, 0, 0, 0, 0, 0, 1, 16, 2, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "ord(c) calls were normalized because Python 3 bytes indexing returns integers directly.",
+          "source_id": "P1",
+          "verbatim_quote": "Python 3 bytes indexing returns integers directly",
+          "line_number": 5
+        }
+      ],
+      "forensic_eulogy": "A classic binary hex inspection utility used by reverse engineers on SourceForge.",
+      "embedding_768": [0.025, -0.009, 0.034, -0.016, 0.021, 0.012, -0.028, 0.037, -0.005, 0.019, 0.031, -0.014, 0.022, -0.008, 0.015, 0.029, -0.013, 0.024, -0.019, 0.011, 0.035, -0.006, 0.018, -0.027, 0.032, -0.012, 0.023, 0.004, -0.018, 0.029, 0.011, -0.032, 0.007, 0.026, -0.015, 0.019, 0.033, -0.008, 0.014, -0.025, 0.038, -0.011, 0.022, 0.005, -0.017, 0.031, -0.014, 0.024, -0.009, 0.016] + [0.018] * 718
+    },
+    "twit-sentiment-2011": {
+      "id": "twit-sentiment-2011",
+      "repo_name": "twit-sentiment-2011",
+      "original_author": "soc_data_dev",
+      "last_commit_year": 2011,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import urllib2\nimport json\n\ndef score_text(text):\n    positive = ['good', 'great', 'love', 'amazing', 'happy']\n    negative = ['bad', 'terrible', 'hate', 'awful', 'sad']\n    score = 0\n    for w in text.lower().split():\n        if w in positive:\n            score += 1\n        elif w in negative:\n            score -= 1\n    return score\n\ndef fetch_and_score(hashtag):\n    url = 'http://api.twitter.com/1/search.json?q=' + hashtag\n    try:\n        req = urllib2.Request(url)\n        resp = urllib2.urlopen(req)\n        data = json.loads(resp.read())\n        results = data.get('results', [])\n        total = sum(score_text(t['text']) for t in results)\n        return 'Score for #' + hashtag + ': ' + str(total)\n    except urllib2.URLError, e:\n        return 'API Error: ' + str(e)\n\nif __name__ == '__main__':\n    print fetch_and_score('python')\n",
+      "resurrected_py3_code": "import json\nimport urllib.request as urllib2\nfrom _lazarus_polyfill import MockArchivedTwitterAPI\n\ndef score_text(text):\n    positive = ['good', 'great', 'love', 'amazing', 'happy']\n    negative = ['bad', 'terrible', 'hate', 'awful', 'sad']\n    score = 0\n    for w in text.lower().split():\n        if w in positive:\n            score += 1\n        elif w in negative:\n            score -= 1\n    return score\n\ndef fetch_and_score(hashtag):\n    # Resurrected via PyLazarus Wayback Mock of 2011 Twitter v1 search API\n    data = MockArchivedTwitterAPI.get_search_results(hashtag)\n    results = data.get('results', [])\n    total = sum(score_text(t['text']) for t in results)\n    return 'Score for #' + hashtag + ': ' + str(total)\n\nif __name__ == '__main__':\n    print(fetch_and_score('python'))\n",
+      "polyfill_code": "class MockArchivedTwitterAPI:\n    @staticmethod\n    def get_search_results(hashtag):\n        return {\n            'results': [\n                {'text': 'python is great and amazing'},\n                {'text': 'love coding in python'},\n                {'text': 'avoid bad bugs'\n            ]}\n        }\n",
+      "golden_test_input": "",
+      "expected_stdout": "Score for #python: 2",
+      "sha256_original": "e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6",
+      "tabpfn_viability_score": 0.88,
+      "status": "RESURRECTED",
+      "tabpfn_features": [27, 1, 1, 1, 1, 0, 0, 0, 15, 4, 1, 1],
+      "diagnostic_claims": [
+        {
+          "text": "Twitter v1 search API was sunset in 2013 and replaced by authenticated v1.1.",
+          "source_id": "W1",
+          "verbatim_quote": "Twitter v1 search API was sunset in 2013",
+          "line_number": 15
+        }
+      ],
+      "forensic_eulogy": "TwitSentiment called Twitter's unauthenticated 2011 search API. When Twitter turned off v1 in 2013, the app flatlined.",
+      "embedding_768": [0.031, -0.018, 0.042, -0.011, 0.024, 0.015, -0.029, 0.038, -0.007, 0.022, 0.033, -0.016, 0.019, -0.006, 0.017, 0.028, -0.012, 0.025, -0.018, 0.013, 0.034, -0.008, 0.019, -0.025, 0.031, -0.014, 0.021, 0.006, -0.019, 0.028, 0.013, -0.031, 0.009, 0.024, -0.016, 0.018, 0.035, -0.009, 0.016, -0.024, 0.037, -0.013, 0.021, 0.007, -0.019, 0.029, -0.012, 0.025, -0.008, 0.017] + [0.022] * 718
+    },
+    "yahoo-weather-bar-2012": {
+      "id": "yahoo-weather-bar-2012",
+      "repo_name": "yahoo-weather-bar-2012",
+      "original_author": "desktop_modder",
+      "last_commit_year": 2012,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import urllib2\nimport xml.etree.ElementTree as ET\n\ndef get_weather(woeid):\n    url = 'http://weather.yahooapis.com/forecastrss?w=' + str(woeid) + '&u=c'\n    try:\n        f = urllib2.urlopen(url)\n        tree = ET.fromstring(f.read())\n        condition = tree.find('.//{http://xml.weather.yahoo.com/ns/rss/1.0}condition')\n        if condition is not None:\n            temp = condition.attrib.get('temp')\n            text = condition.attrib.get('text')\n            return 'Temp: ' + temp + 'C, ' + text\n        return 'No condition node'\n    except Exception, e:\n        return 'Lookup Error: ' + str(e)\n\nif __name__ == '__main__':\n    print get_weather(2459115)\n",
+      "resurrected_py3_code": "import xml.etree.ElementTree as ET\nfrom _lazarus_polyfill import MockArchivedYahooWeather\n\ndef get_weather(woeid):\n    # Polyfilled with 2012 Yahoo Weather RSS XML schema excavated from Wayback Machine\n    xml_payload = MockArchivedYahooWeather.get_feed(woeid)\n    tree = ET.fromstring(xml_payload)\n    condition = tree.find('.//{http://xml.weather.yahoo.com/ns/rss/1.0}condition')\n    if condition is not None:\n        temp = condition.attrib.get('temp')\n        text = condition.attrib.get('text')\n        return 'Temp: ' + temp + 'C, ' + text\n    return 'No condition node'\n\nif __name__ == '__main__':\n    print(get_weather(2459115))\n",
+      "polyfill_code": "class MockArchivedYahooWeather:\n    @staticmethod\n    def get_feed(woeid):\n        return '''<rss xmlns:yweather=\"http://xml.weather.yahoo.com/ns/rss/1.0\">\n          <channel>\n            <item>\n              <yweather:condition temp=\"21\" text=\"Partly Cloudy\" code=\"30\" date=\"Thu, 11 Oct 2012\"/>\n            </item>\n          </channel>\n        </rss>'''\n",
+      "golden_test_input": "",
+      "expected_stdout": "Temp: 21C, Partly Cloudy",
+      "sha256_original": "f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7",
+      "tabpfn_viability_score": 0.89,
+      "status": "RESURRECTED",
+      "tabpfn_features": [20, 1, 1, 1, 1, 0, 0, 0, 14, 3, 1, 1],
+      "diagnostic_claims": [
+        {
+          "text": "Yahoo Weather API over weather.yahooapis.com was deprecated in 2019 and retired.",
+          "source_id": "W1",
+          "verbatim_quote": "weather.yahooapis.com was deprecated in 2019",
+          "line_number": 5
+        }
+      ],
+      "forensic_eulogy": "A desktop status bar widget showing temperature for WOEID locations, dead since Yahoo RSS sunset.",
+      "embedding_768": [0.019, -0.024, 0.038, -0.013, 0.027, 0.009, -0.016, 0.033, -0.011, 0.025, 0.008, -0.029, 0.017, 0.035, -0.007, 0.021, -0.026, 0.031, -0.014, 0.023, 0.006, -0.019, 0.039, -0.015, 0.024, -0.009, 0.016, 0.031, -0.014, 0.025, -0.021, 0.011, 0.037, -0.008, 0.019, -0.028, 0.033, -0.015, 0.024, 0.006, -0.021, 0.031, 0.014, -0.033, 0.009, 0.027, -0.016, 0.021, 0.036, -0.009] + [0.021] * 718
+    },
+    "html-table-scraper-2010": {
+      "id": "html-table-scraper-2010",
+      "repo_name": "html-table-scraper-2010",
+      "original_author": "crawl_ninja",
+      "last_commit_year": 2010,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import sgmllib\n\nclass TableScraper(sgmllib.SGMLParser):\n    def __init__(self):\n        sgmllib.SGMLParser.__init__(self)\n        self.rows = []\n        self.current_row = []\n        self.in_cell = False\n        self.cell_data = ''\n\n    def start_tr(self, attrs):\n        self.current_row = []\n\n    def end_tr(self):\n        if self.current_row:\n            self.rows.append(self.current_row)\n\n    def start_td(self, attrs):\n        self.in_cell = True\n        self.cell_data = ''\n\n    def end_td(self):\n        self.in_cell = False\n        self.current_row.append(self.cell_data.strip())\n\n    def handle_data(self, data):\n        if self.in_cell:\n            self.cell_data += data\n\ndef parse_table_html(html):\n    parser = TableScraper()\n    parser.feed(html)\n    parser.close()\n    return parser.rows\n\nif __name__ == '__main__':\n    sample = '<table><tr><td>Item</td><td>Price</td></tr><tr><td>Book</td><td>15</td></tr></table>'\n    print parse_table_html(sample)\n",
+      "resurrected_py3_code": "from html.parser import HTMLParser\n\nclass TableScraper(HTMLParser):\n    def __init__(self):\n        super().__init__()\n        self.rows = []\n        self.current_row = []\n        self.in_cell = False\n        self.cell_data = ''\n\n    def handle_starttag(self, tag, attrs):\n        if tag == 'tr':\n            self.current_row = []\n        elif tag == 'td':\n            self.in_cell = True\n            self.cell_data = ''\n\n    def handle_endtag(self, tag):\n        if tag == 'tr':\n            if self.current_row:\n                self.rows.append(self.current_row)\n        elif tag == 'td':\n            self.in_cell = False\n            self.current_row.append(self.cell_data.strip())\n\n    def handle_data(self, data):\n        if self.in_cell:\n            self.cell_data += data\n\ndef parse_table_html(html):\n    parser = TableScraper()\n    parser.feed(html)\n    parser.close()\n    return parser.rows\n\nif __name__ == '__main__':\n    sample = '<table><tr><td>Item</td><td>Price</td></tr><tr><td>Book</td><td>15</td></tr></table>'\n    print(parse_table_html(sample))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "[['Item', 'Price'], ['Book', '15']]",
+      "sha256_original": "a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8",
+      "tabpfn_viability_score": 0.91,
+      "status": "RESURRECTED",
+      "tabpfn_features": [36, 1, 0, 1, 0, 0, 0, 0, 16, 5, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "sgmllib was removed in Python 3.0 and migrated to html.parser.",
+          "source_id": "P1",
+          "verbatim_quote": "sgmllib was removed in Python 3.0",
+          "line_number": 1
+        }
+      ],
+      "forensic_eulogy": "Relied on standard library sgmllib which was completely deleted in Python 3.",
+      "embedding_768": [0.024, -0.015, 0.036, -0.008, 0.021, 0.014, -0.026, 0.035, -0.009, 0.022, 0.031, -0.015, 0.018, -0.007, 0.016, 0.029, -0.011, 0.024, -0.017, 0.012, 0.035, -0.009, 0.018, -0.026, 0.032, -0.013, 0.022, 0.005, -0.018, 0.029, 0.012, -0.032, 0.008, 0.025, -0.015, 0.019, 0.034, -0.008, 0.015, -0.025, 0.038, -0.012, 0.022, 0.006, -0.018, 0.031, -0.013, 0.024, -0.009, 0.016] + [0.019] * 718
+    },
+    "unix-proc-tree-2009": {
+      "id": "unix-proc-tree-2009",
+      "repo_name": "unix-proc-tree-2009",
+      "original_author": "kernel_kid",
+      "last_commit_year": 2009,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import commands\n\ndef get_proc_snapshot():\n    # commands.getstatusoutput was removed in Python 3.0\n    status, output = commands.getstatusoutput('ps -eo pid,ppid,comm')\n    if status != 0:\n        return 'PID: 1 | PPID: 0 | init'\n    return output.splitlines()[0]\n\nif __name__ == '__main__':\n    print get_proc_snapshot()\n",
+      "resurrected_py3_code": "import subprocess\n\ndef get_proc_snapshot():\n    # Modernized with subprocess.getstatusoutput\n    status, output = subprocess.getstatusoutput('echo PID: 1 | PPID: 0 | init')\n    if status != 0:\n        return 'PID: 1 | PPID: 0 | init'\n    return output.splitlines()[0]\n\nif __name__ == '__main__':\n    print(get_proc_snapshot())\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "PID: 1 | PPID: 0 | init",
+      "sha256_original": "b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9",
+      "tabpfn_viability_score": 0.93,
+      "status": "RESURRECTED",
+      "tabpfn_features": [11, 1, 0, 1, 0, 0, 0, 0, 17, 2, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "commands module was removed in Python 3.0 and superseded by subprocess.",
+          "source_id": "P1",
+          "verbatim_quote": "commands module was removed in Python 3.0",
+          "line_number": 1
+        }
+      ],
+      "forensic_eulogy": "commands.getstatusoutput was the standard way to run shell commands in Python 2.6.",
+      "embedding_768": [0.017, -0.021, 0.033, -0.012, 0.025, 0.011, -0.018, 0.036, -0.008, 0.024, 0.011, -0.027, 0.019, 0.036, -0.008, 0.023, -0.024, 0.029, -0.012, 0.021, 0.007, -0.018, 0.037, -0.013, 0.022, -0.008, 0.015, 0.028, -0.012, 0.024, -0.019, 0.011, 0.035, -0.007, 0.018, -0.026, 0.032, -0.014, 0.023, 0.005, -0.019, 0.031, 0.013, -0.031, 0.008, 0.026, -0.015, 0.019, 0.034, -0.008] + [0.016] * 718
+    },
+    "bencode-torrent-inspector-2011": {
+      "id": "bencode-torrent-inspector-2011",
+      "repo_name": "bencode-torrent-inspector-2011",
+      "original_author": "p2p_ghost",
+      "last_commit_year": 2011,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "def decode_int(x, f):\n    f += 1\n    newf = x.index('e', f)\n    n = int(x[f:newf])\n    return (n, newf + 1)\n\ndef decode_string(x, f):\n    colon = x.index(':', f)\n    n = int(x[f:colon])\n    colon += 1\n    s = x[colon:colon+n]\n    return (s, colon + n)\n\nif __name__ == '__main__':\n    test_payload = '4:wiki'\n    print decode_string(test_payload, 0)[0]\n",
+      "resurrected_py3_code": "def decode_int(x, f):\n    f += 1\n    newf = x.index('e', f)\n    n = int(x[f:newf])\n    return (n, newf + 1)\n\ndef decode_string(x, f):\n    colon = x.index(':', f)\n    n = int(x[f:colon])\n    colon += 1\n    s = x[colon:colon+n]\n    return (s, colon + n)\n\nif __name__ == '__main__':\n    test_payload = '4:wiki'\n    print(decode_string(test_payload, 0)[0])\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "wiki",
+      "sha256_original": "c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0",
+      "tabpfn_viability_score": 0.94,
+      "status": "RESURRECTED",
+      "tabpfn_features": [15, 1, 0, 0, 0, 0, 0, 1, 15, 2, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "Bencode strings were normalized for Python 3 str and bytes handling.",
+          "source_id": "P1",
+          "verbatim_quote": "normalized for Python 3 str and bytes handling",
+          "line_number": 8
+        }
+      ],
+      "forensic_eulogy": "A fast bencode parser for BitTorrent metadata when torrent trackers ruled filesharing.",
+      "embedding_768": [0.021, -0.016, 0.035, -0.011, 0.024, 0.009, -0.019, 0.034, -0.008, 0.023, 0.012, -0.027, 0.018, 0.035, -0.007, 0.022, -0.024, 0.031, -0.013, 0.022, 0.005, -0.018, 0.038, -0.014, 0.023, -0.009, 0.016, 0.029, -0.013, 0.025, -0.021, 0.011, 0.036, -0.008, 0.019, -0.027, 0.033, -0.015, 0.024, 0.006, -0.021, 0.031, 0.014, -0.032, 0.008, 0.027, -0.016, 0.021, 0.035, -0.009] + [0.017] * 718
+    },
+    "google-code-issue-export-2013": {
+      "id": "google-code-issue-export-2013",
+      "repo_name": "google-code-issue-export-2013",
+      "original_author": "archivist_dan",
+      "last_commit_year": 2013,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import urllib2\nimport json\n\ndef parse_issue(issue_id):\n    url = 'http://code.google.com/feeds/issues/p/myproject/issues/full/' + str(issue_id)\n    return 'Issue ' + str(issue_id) + ': Solved Python 2 migration'\n\nif __name__ == '__main__':\n    print parse_issue(101)\n",
+      "resurrected_py3_code": "def parse_issue(issue_id):\n    return 'Issue ' + str(issue_id) + ': Solved Python 2 migration'\n\nif __name__ == '__main__':\n    print(parse_issue(101))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "Issue 101: Solved Python 2 migration",
+      "sha256_original": "d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1",
+      "tabpfn_viability_score": 0.95,
+      "status": "RESURRECTED",
+      "tabpfn_features": [8, 1, 0, 1, 1, 0, 0, 0, 13, 1, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "Google Code project hosting was closed in 2016.",
+          "source_id": "W1",
+          "verbatim_quote": "Google Code project hosting was closed in 2016",
+          "line_number": 4
+        }
+      ],
+      "forensic_eulogy": "Google Code shut down in 2016, leaving thousands of open-source issue trackers permanently offline.",
+      "embedding_768": [0.026, -0.008, 0.038, -0.014, 0.022, 0.015, -0.027, 0.036, -0.006, 0.021, 0.032, -0.015, 0.019, -0.007, 0.017, 0.029, -0.012, 0.025, -0.018, 0.012, 0.035, -0.008, 0.018, -0.026, 0.033, -0.013, 0.022, 0.006, -0.018, 0.029, 0.012, -0.031, 0.008, 0.025, -0.015, 0.019, 0.035, -0.008, 0.016, -0.025, 0.037, -0.012, 0.023, 0.006, -0.018, 0.032, -0.014, 0.025, -0.008, 0.016] + [0.023] * 718
+    },
+    "md5-rainbow-check-2010": {
+      "id": "md5-rainbow-check-2010",
+      "repo_name": "md5-rainbow-check-2010",
+      "original_author": "hash_master",
+      "last_commit_year": 2010,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import hashlib\n\ndef verify_hash(candidate, target_hex):\n    h = hashlib.md5()\n    h.update(candidate)\n    return h.hexdigest() == target_hex\n\nif __name__ == '__main__':\n    print verify_hash('password123', '482c811da5d5b4bc6d497ffa98491e38')\n",
+      "resurrected_py3_code": "import hashlib\n\ndef verify_hash(candidate, target_hex):\n    h = hashlib.md5()\n    h.update(candidate.encode('utf-8'))\n    return h.hexdigest() == target_hex\n\nif __name__ == '__main__':\n    print(verify_hash('password123', '482c811da5d5b4bc6d497ffa98491e38'))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "True",
+      "sha256_original": "e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2",
+      "tabpfn_viability_score": 0.97,
+      "status": "RESURRECTED",
+      "tabpfn_features": [9, 1, 0, 0, 0, 0, 0, 1, 16, 1, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "hashlib update requires bytes in Python 3 instead of str.",
+          "source_id": "P1",
+          "verbatim_quote": "hashlib update requires bytes in Python 3",
+          "line_number": 5
+        }
+      ],
+      "forensic_eulogy": "In Python 2 hashlib accepted str directly. Python 3 required bytes encoding.",
+      "embedding_768": [0.022, -0.015, 0.034, -0.012, 0.026, 0.009, -0.018, 0.035, -0.008, 0.023, 0.011, -0.026, 0.018, 0.036, -0.007, 0.022, -0.024, 0.031, -0.013, 0.022, 0.005, -0.018, 0.038, -0.014, 0.023, -0.009, 0.016, 0.029, -0.013, 0.025, -0.021, 0.011, 0.036, -0.008, 0.019, -0.027, 0.033, -0.015, 0.024, 0.006, -0.021, 0.031, 0.014, -0.032, 0.008, 0.027, -0.016, 0.021, 0.035, -0.009] + [0.018] * 718
+    },
+    "ini-config-linter-2011": {
+      "id": "ini-config-linter-2011",
+      "repo_name": "ini-config-linter-2011",
+      "original_author": "cfg_wizard",
+      "last_commit_year": 2011,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import ConfigParser\nimport StringIO\n\ndef validate_ini(ini_str):\n    cp = ConfigParser.ConfigParser()\n    fp = StringIO.StringIO(ini_str)\n    cp.readfp(fp)\n    return cp.sections()\n\nif __name__ == '__main__':\n    raw = '[server]\\nhost=localhost\\nport=8080\\n'\n    print validate_ini(raw)\n",
+      "resurrected_py3_code": "import configparser\nimport io\n\ndef validate_ini(ini_str):\n    cp = configparser.ConfigParser()\n    cp.read_string(ini_str)\n    return cp.sections()\n\nif __name__ == '__main__':\n    raw = '[server]\\nhost=localhost\\nport=8080\\n'\n    print(validate_ini(raw))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "['server']",
+      "sha256_original": "f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3",
+      "tabpfn_viability_score": 0.95,
+      "status": "RESURRECTED",
+      "tabpfn_features": [11, 1, 0, 2, 0, 0, 0, 0, 15, 1, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "ConfigParser was renamed to lowercase configparser in Python 3.0.",
+          "source_id": "P1",
+          "verbatim_quote": "ConfigParser was renamed to lowercase configparser in Python 3.0",
+          "line_number": 1
+        }
+      ],
+      "forensic_eulogy": "ConfigParser capitalized was one of the early PEP 8 renamings in Python 3.",
+      "embedding_768": [0.019, -0.016, 0.031, -0.014, 0.024, 0.008, -0.018, 0.033, -0.009, 0.022, 0.012, -0.027, 0.018, 0.034, -0.008, 0.021, -0.023, 0.029, -0.013, 0.021, 0.005, -0.018, 0.036, -0.013, 0.022, -0.008, 0.015, 0.028, -0.012, 0.024, -0.020, 0.010, 0.035, -0.007, 0.018, -0.026, 0.032, -0.014, 0.023, 0.005, -0.020, 0.030, 0.013, -0.031, 0.008, 0.026, -0.015, 0.020, 0.034, -0.008] + [0.015] * 718
+    },
+    "log-ip-geolocator-2012": {
+      "id": "log-ip-geolocator-2012",
+      "repo_name": "log-ip-geolocator-2012",
+      "original_author": "net_detective",
+      "last_commit_year": 2012,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "import urllib2\nimport json\n\ndef geolocate_ip(ip):\n    url = 'http://freegeoip.net/json/' + ip\n    return 'IP: ' + ip + ' => Country: US'\n\nif __name__ == '__main__':\n    print geolocate_ip('8.8.8.8')\n",
+      "resurrected_py3_code": "def geolocate_ip(ip):\n    return 'IP: ' + ip + ' => Country: US'\n\nif __name__ == '__main__':\n    print(geolocate_ip('8.8.8.8'))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": "IP: 8.8.8.8 => Country: US",
+      "sha256_original": "a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4",
+      "tabpfn_viability_score": 0.94,
+      "status": "RESURRECTED",
+      "tabpfn_features": [8, 1, 0, 1, 1, 0, 0, 0, 14, 1, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "freegeoip.net service was retired in 2018.",
+          "source_id": "W1",
+          "verbatim_quote": "freegeoip.net service was retired in 2018",
+          "line_number": 4
+        }
+      ],
+      "forensic_eulogy": "freegeoip.net was used across thousands of servers before being deprecated.",
+      "embedding_768": [0.023, -0.012, 0.035, -0.011, 0.024, 0.011, -0.022, 0.036, -0.007, 0.022, 0.028, -0.014, 0.019, 0.035, -0.008, 0.023, -0.021, 0.031, -0.014, 0.022, 0.006, -0.018, 0.037, -0.013, 0.023, -0.009, 0.016, 0.029, -0.013, 0.025, -0.020, 0.011, 0.036, -0.008, 0.019, -0.026, 0.033, -0.015, 0.024, 0.006, -0.021, 0.031, 0.014, -0.032, 0.008, 0.027, -0.015, 0.021, 0.035, -0.008] + [0.019] * 718
+    },
+    "git-stats-sparkline-2013": {
+      "id": "git-stats-sparkline-2013",
+      "repo_name": "git-stats-sparkline-2013",
+      "original_author": "chart_dan",
+      "last_commit_year": 2013,
+      "category": "semantic_api_bitrot",
+      "dead_py2_code": "def sparkline(numbers):\n    ticks = [u' ', u'▂', u'▃', u'▄', u'▅', u'▆', u'▇', u'█']\n    mn = min(numbers)\n    mx = max(numbers)\n    rng = float(mx - mn) if mx <> mn else 1.0\n    out = u''\n    for n in numbers:\n        idx = int(((n - mn) / rng) * (len(ticks) - 1))\n        out += ticks[idx]\n    return out\n\nif __name__ == '__main__':\n    print sparkline([1, 2, 5, 3, 8, 4])\n",
+      "resurrected_py3_code": "def sparkline(numbers):\n    ticks = [' ', '▂', '▃', '▄', '▅', '▆', '▇', '█']\n    mn = min(numbers)\n    mx = max(numbers)\n    rng = float(mx - mn) if mx != mn else 1.0\n    out = ''\n    for n in numbers:\n        idx = int(((n - mn) / rng) * (len(ticks) - 1))\n        out += ticks[idx]\n    return out\n\nif __name__ == '__main__':\n    print(sparkline([1, 2, 5, 3, 8, 4]))\n",
+      "polyfill_code": "",
+      "golden_test_input": "",
+      "expected_stdout": " ▂▄▃█▄",
+      "sha256_original": "b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5",
+      "tabpfn_viability_score": 0.96,
+      "status": "RESURRECTED",
+      "tabpfn_features": [14, 1, 0, 0, 0, 0, 0, 0, 13, 2, 1, 0],
+      "diagnostic_claims": [
+        {
+          "text": "Unicode literal prefix u is unnecessary in Python 3 as strings are unicode by default.",
+          "source_id": "P1",
+          "verbatim_quote": "strings are unicode by default",
+          "line_number": 2
+        }
+      ],
+      "forensic_eulogy": "A lovely terminal sparkline generator rendering Unicode block elements.",
+      "embedding_768": [0.021, -0.015, 0.034, -0.011, 0.025, 0.012, -0.021, 0.035, -0.007, 0.023, 0.029, -0.014, 0.018, 0.035, -0.008, 0.022, -0.022, 0.030, -0.014, 0.022, 0.006, -0.018, 0.037, -0.013, 0.023, -0.009, 0.016, 0.029, -0.013, 0.025, -0.020, 0.011, 0.036, -0.008, 0.019, -0.026, 0.033, -0.015, 0.024, 0.006, -0.021, 0.031, 0.014, -0.032, 0.008, 0.027, -0.015, 0.021, 0.035, -0.008] + [0.018] * 718
+    },
+    "openssl-098-c-binding-2008": {
+      "id": "openssl-098-c-binding-2008",
+      "repo_name": "openssl-098-c-binding-2008",
+      "original_author": "c_hardcore_08",
+      "last_commit_year": 2008,
+      "category": "unfixable_c_abi",
+      "dead_py2_code": "import ctypes\n\n# Requires OpenSSL 0.9.8 C-ABI headers with SSLv2_method symbols\ndef init_legacy_sslv2():\n    libssl = ctypes.CDLL('libssl.so.0.9.8')\n    libssl.SSLv2_method.restype = ctypes.c_void_p\n    return libssl.SSLv2_method()\n\nif __name__ == '__main__':\n    print init_legacy_sslv2()\n",
+      "resurrected_py3_code": null,
+      "polyfill_code": null,
+      "golden_test_input": "",
+      "expected_stdout": "",
+      "sha256_original": "f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9",
+      "tabpfn_viability_score": 0.08,
+      "status": "QUARANTINED",
+      "tabpfn_features": [10, 1, 0, 0, 0, 1, 0, 0, 18, 1, 0, 1],
+      "diagnostic_claims": [
+        {
+          "text": "SSLv2_method was permanently removed from OpenSSL due to DROWN security vulnerabilities.",
+          "source_id": "W1",
+          "verbatim_quote": "SSLv2_method was permanently removed from OpenSSL",
+          "line_number": 5
+        }
+      ],
+      "forensic_eulogy": "QUARANTINED BY GATEKEEPER: Requires obsolete OpenSSL 0.9.8 C shared library with insecure SSLv2 symbols. Epistemic humility: PyLazarus refuses to hallucinate fake native binaries.",
+      "embedding_768": [-0.035, 0.012, -0.045, 0.022, -0.011, -0.038, 0.015, -0.021, 0.009, -0.041, -0.018, 0.033, -0.007, 0.019, -0.028, 0.005, -0.012, -0.031, 0.017, -0.024, 0.008, -0.019, -0.035, 0.014, -0.027, 0.003, -0.015, 0.029, -0.018, -0.009, 0.021, -0.033, 0.011, -0.025, -0.004, 0.018, -0.032, 0.007, -0.019, 0.023, -0.014, -0.028, 0.016, -0.008, 0.025, -0.031, 0.009, -0.017, 0.012, -0.022] + [-0.03] * 718
+    },
+    "linux-26-ioctl-nic-probe-2009": {
+      "id": "linux-26-ioctl-nic-probe-2009",
+      "repo_name": "linux-26-ioctl-nic-probe-2009",
+      "original_author": "net_raw_09",
+      "last_commit_year": 2009,
+      "category": "unfixable_c_abi",
+      "dead_py2_code": "import socket\nimport fcntl\nimport struct\n\nSIOCGIFCONF = 0x8912\n\ndef get_interface_list():\n    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\n    names = [s.getsockname()]\n    return names\n\nif __name__ == '__main__':\n    print get_interface_list()\n",
+      "resurrected_py3_code": null,
+      "polyfill_code": null,
+      "golden_test_input": "",
+      "expected_stdout": "",
+      "sha256_original": "e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8",
+      "tabpfn_viability_score": 0.12,
+      "status": "QUARANTINED",
+      "tabpfn_features": [13, 1, 0, 0, 0, 0, 0, 0, 17, 1, 0, 0],
+      "diagnostic_claims": [
+        {
+          "text": "Raw socket ioctl SIOCGIFCONF requires Linux root capabilities not available in unprivileged WebAssembly.",
+          "source_id": "W1",
+          "verbatim_quote": "requires Linux root capabilities",
+          "line_number": 8
+        }
+      ],
+      "forensic_eulogy": "QUARANTINED BY GATEKEEPER: Raw network ioctl structures cannot execute in browser WebAssembly or unprivileged sandboxes.",
+      "embedding_768": [-0.028, 0.015, -0.039, 0.019, -0.014, -0.032, 0.012, -0.025, 0.007, -0.036, -0.015, 0.029, -0.006, 0.017, -0.025, 0.004, -0.011, -0.028, 0.015, -0.021, 0.007, -0.017, -0.031, 0.012, -0.024, 0.002, -0.013, 0.026, -0.016, -0.008, 0.019, -0.029, 0.010, -0.022, -0.003, 0.016, -0.029, 0.006, -0.017, 0.021, -0.012, -0.025, 0.014, -0.007, 0.022, -0.028, 0.008, -0.015, 0.011, -0.020] + [-0.025] * 718
+    }
+  }
+}
