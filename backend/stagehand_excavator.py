@@ -18,9 +18,15 @@ import json
 import os
 import re
 import urllib.parse
+import urllib.request
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-import httpx
+
+try:
+    import httpx
+    HTTPX_AVAILABLE = True
+except ImportError:
+    HTTPX_AVAILABLE = False
 
 
 @dataclass
@@ -74,11 +80,10 @@ class WaybackStagehandExcavator:
 
         snapshots: List[WaybackSnapshot] = []
         try:
-            with httpx.Client(timeout=10.0) as client:
-                res = client.get(cdx_endpoint)
-                if res.status_code == 200:
-                    rows = res.json()
-                    # First row is headers: ["urlkey", "timestamp", "original", "mimetype", "statuscode", "digest", "length"]
+            req = urllib.request.Request(cdx_endpoint, headers={"User-Agent": "PyLazarus/1.0"})
+            with urllib.request.urlopen(req, timeout=10.0) as resp:
+                if resp.status == 200:
+                    rows = json.loads(resp.read().decode("utf-8"))
                     if len(rows) > 1:
                         for row in rows[1:]:
                             ts = row[1]
@@ -90,7 +95,7 @@ class WaybackStagehandExcavator:
                                 continue
 
                             wayback_url = f"https://web.archive.org/web/{ts}id_/{orig}"
-                            extracted = self._fetch_and_clean_dom(client, wayback_url)
+                            extracted = self._fetch_and_clean_dom(wayback_url)
                             if self._passes_technical_content_check(extracted):
                                 import hashlib
                                 sha = hashlib.sha256(extracted.encode("utf-8")).hexdigest()
@@ -109,19 +114,17 @@ class WaybackStagehandExcavator:
             return self._get_replay_snapshots(repo_name, dead_url, last_commit_year)
         return snapshots
 
-    def _fetch_and_clean_dom(self, client: httpx.Client, url: str) -> str:
+    def _fetch_and_clean_dom(self, url: str) -> str:
         """Fetches Wayback raw capture and extracts clean visible text."""
         try:
-            res = client.get(url, timeout=8.0)
-            if res.status_code == 200:
-                html = res.text
-                # Strip scripts and styles
-                clean = re.sub(r"<(script|style).*?>.*?</\1>", "", html, flags=re.DOTALL | re.IGNORECASE)
-                # Strip tags
-                clean = re.sub(r"<[^>]+>", " ", clean)
-                # Normalize whitespace
-                clean = re.sub(r"\s+", " ", clean).strip()
-                return clean[:2000]
+            req = urllib.request.Request(url, headers={"User-Agent": "PyLazarus/1.0"})
+            with urllib.request.urlopen(req, timeout=8.0) as resp:
+                if resp.status == 200:
+                    html = resp.read().decode("utf-8", errors="ignore")
+                    clean = re.sub(r"<(script|style).*?>.*?</\1>", "", html, flags=re.DOTALL | re.IGNORECASE)
+                    clean = re.sub(r"<[^>]+>", " ", clean)
+                    clean = re.sub(r"\s+", " ", clean).strip()
+                    return clean[:2000]
         except Exception:
             pass
         return ""
@@ -138,7 +141,6 @@ class WaybackStagehandExcavator:
 
     def _get_replay_snapshots(self, repo_name: str, dead_url: str, last_commit_year: int) -> List[WaybackSnapshot]:
         """Provides verified authentic snapshots from historical fixtures."""
-        fixtures_path = os.path.join(os.path.dirname(__file__), "..", "data", "fixtures", "benchmark_18_repos.json")
         default_snapshots: Dict[str, Dict[str, str]] = {
             "twit-sentiment-2011": {
                 "title": "Twitter REST API v1.0 Search Specification (Archived March 2011)",

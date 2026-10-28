@@ -12,8 +12,15 @@ from __future__ import annotations
 
 import json
 import os
+import urllib.request
+import urllib.error
 from typing import Any, Dict, List, Optional, Tuple
-import httpx
+
+try:
+    import httpx
+    HTTPX_AVAILABLE = True
+except ImportError:
+    HTTPX_AVAILABLE = False
 
 
 class InferenceRouter:
@@ -45,12 +52,21 @@ class InferenceRouter:
 
     def is_ollama_available(self, timeout_sec: float = 1.5) -> bool:
         """Probes the local Ollama daemon /api/tags endpoint with a fast timeout."""
-        try:
-            with httpx.Client(timeout=timeout_sec) as client:
-                res = client.get(f"{self.ollama_base_url}/api/tags")
-                return res.status_code == 200
-        except Exception:
-            return False
+        endpoint = f"{self.ollama_base_url}/api/tags"
+        if HTTPX_AVAILABLE:
+            try:
+                with httpx.Client(timeout=timeout_sec) as client:
+                    res = client.get(endpoint)
+                    return res.status_code == 200
+            except Exception:
+                return False
+        else:
+            try:
+                req = urllib.request.Request(endpoint, headers={"User-Agent": "PyLazarus/1.0"})
+                with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
+                    return resp.status == 200
+            except Exception:
+                return False
 
     def embed_text(
         self,
@@ -85,17 +101,20 @@ class InferenceRouter:
             return [round(x / norm, 6) for x in pseudo_vec]
 
         # Call local Ollama /api/embed
+        req_body = json.dumps({
+            "model": self.embed_model,
+            "input": formatted_input,
+        }).encode("utf-8")
+
         try:
-            with httpx.Client(timeout=10.0) as client:
-                res = client.post(
-                    f"{self.ollama_base_url}/api/embed",
-                    json={
-                        "model": self.embed_model,
-                        "input": formatted_input,
-                    },
-                )
-                if res.status_code == 200:
-                    data = res.json()
+            req = urllib.request.Request(
+                f"{self.ollama_base_url}/api/embed",
+                data=req_body,
+                headers={"Content-Type": "application/json"},
+            )
+            with urllib.request.urlopen(req, timeout=10.0) as resp:
+                if resp.status == 200:
+                    data = json.loads(resp.read().decode("utf-8"))
                     embeddings = data.get("embeddings", [])
                     if embeddings and len(embeddings[0]) == 768:
                         return embeddings[0]
@@ -155,28 +174,31 @@ class InferenceRouter:
             f"Failing Traceback:\n{error_context}\n"
         )
 
+        post_data = json.dumps({
+            "model": self.chat_model,
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt},
+            ],
+            "options": {
+                "temperature": 0.0,
+                "top_k": 1,
+                "seed": 42,
+                "num_ctx": 4096,
+            },
+            "format": "json",
+            "stream": False,
+        }).encode("utf-8")
+
         try:
-            with httpx.Client(timeout=45.0) as client:
-                res = client.post(
-                    f"{self.ollama_base_url}/api/chat",
-                    json={
-                        "model": self.chat_model,
-                        "messages": [
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": user_prompt},
-                        ],
-                        "options": {
-                            "temperature": 0.0,
-                            "top_k": 1,
-                            "seed": 42,
-                            "num_ctx": 4096,
-                        },
-                        "format": "json",
-                        "stream": False,
-                    },
-                )
-                if res.status_code == 200:
-                    payload = res.json()
+            req = urllib.request.Request(
+                f"{self.ollama_base_url}/api/chat",
+                data=post_data,
+                headers={"Content-Type": "application/json"},
+            )
+            with urllib.request.urlopen(req, timeout=45.0) as resp:
+                if resp.status == 200:
+                    payload = json.loads(resp.read().decode("utf-8"))
                     content = payload.get("message", {}).get("content", "{}")
                     parsed = json.loads(content)
                     return {

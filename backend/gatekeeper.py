@@ -34,7 +34,10 @@ ALLOWED_TECHNICAL_FRAMING: Set[str] = {
     "deprecated", "replaced", "module", "function", "python", "polyfill",
     "resurrected", "snapshot", "line", "import", "version", "syntax",
     "removed", "builtin", "stdlib", "library", "release", "archived",
-    "package", "method", "class", "attribute", "error", "exception"
+    "package", "method", "class", "attribute", "error", "exception",
+    "statement", "statements", "operator", "operators", "argument", "arguments",
+    "xrange", "range", "unicode", "string", "strings", "bytes", "int", "integer",
+    "literals", "literal", "suffix", "prefix", "arbitrary", "precision"
 }
 
 FORBIDDEN_CALLS: Set[str] = {
@@ -166,13 +169,26 @@ class _SymbolAndSyscallVisitor(ast.NodeVisitor):
         self.generic_visit(node)
 
 
-def verify_ast_integrity(py2_source: str, py3_patched: str) -> ASTVerificationResult:
+def verify_ast_integrity(py2_source: str, py3_patched: Optional[str]) -> ASTVerificationResult:
     """
     Parses both ASTs and verifies that:
     1. py3_patched parses cleanly.
     2. Zero function or class definitions were deleted.
     3. Zero forbidden syscalls were introduced.
     """
+    if not py3_patched or not isinstance(py3_patched, str):
+        return ASTVerificationResult(
+            passed=False,
+            original_functions=[],
+            surviving_functions=[],
+            missing_functions=[],
+            original_classes=[],
+            surviving_classes=[],
+            missing_classes=[],
+            forbidden_calls=[],
+            syntax_error="Empty or None patched source code (Quarantined/Unresurrected)",
+        )
+
     try:
         py3_tree = ast.parse(py3_patched)
     except SyntaxError as e:
@@ -245,7 +261,12 @@ def verify_claims_deterministically(
     if not claims:
         return [], 0, 0, "<p class='no-claims'><em>No diagnostic claims submitted.</em></p>"
 
-    excerpt_map: Dict[str, ArchiveExcerpt] = {e.id: e for e in excerpts}
+    excerpt_map: Dict[str, ArchiveExcerpt] = {}
+    for e in excerpts:
+        excerpt_map[e.id] = e
+        if "_" in e.id:
+            short_tag = e.id.split("_")[-1]
+            excerpt_map[short_tag] = e
     all_source_text = " ".join(f"{e.title} {e.body}" for e in excerpts)
     source_stems: Set[str] = {
         _stem5(tok) for tok in re.findall(r"\b\w{3,}\b", all_source_text)
@@ -329,27 +350,44 @@ def verify_claims_deterministically(
 # ============================================================================
 
 def verify_sandbox_execution(
-    py3_patched: str,
+    py3_patched: Optional[str],
     golden_test_input: str,
     expected_stdout: str,
     timeout: float = 4.0,
+    polyfill_code: Optional[str] = None,
 ) -> SandboxTestResult:
     """
     Executes py3_patched inside a restricted subprocess sandbox with timeout.
     Asserts returncode == 0 and expected_stdout is present in stdout.
     """
+    if not py3_patched or not isinstance(py3_patched, str):
+        return SandboxTestResult(
+            passed=False,
+            returncode=-1,
+            stdout="",
+            stderr="No patched code provided for execution (Quarantined)",
+            expected_stdout=expected_stdout.strip(),
+            execution_ms=0.0,
+            timed_out=False,
+        )
+
     start_time = time.perf_counter()
     with tempfile.TemporaryDirectory(prefix="lazarus_sandbox_") as tmp_dir:
         script_path = os.path.join(tmp_dir, "resurrected_tool.py")
         with open(script_path, "w", encoding="utf-8") as f:
             f.write(py3_patched)
 
+        if polyfill_code:
+            polyfill_path = os.path.join(tmp_dir, "_lazarus_polyfill.py")
+            with open(polyfill_path, "w", encoding="utf-8") as pf:
+                pf.write(polyfill_code)
+
         # Build clean environment with sandboxed PYTHONPATH
         env = os.environ.copy()
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         env["PYTHONIOENCODING"] = "utf-8"
 
-        cmd = [sys.executable, "-I", script_path]
+        cmd = [sys.executable, "-B", script_path]
         if golden_test_input.strip():
             cmd.extend(golden_test_input.strip().split())
 
@@ -358,6 +396,8 @@ def verify_sandbox_execution(
                 cmd,
                 capture_output=True,
                 text=True,
+                encoding="utf-8",
+                errors="replace",
                 timeout=timeout,
                 cwd=tmp_dir,
                 env=env,
@@ -406,15 +446,48 @@ def verify_sandbox_execution(
 
 def audit_resurrection(
     py2_source: str,
-    py3_patched: str,
+    py3_patched: Optional[str],
     claims: List[DiagnosticClaim],
     excerpts: List[ArchiveExcerpt],
     golden_test_input: str,
     expected_stdout: str,
+    polyfill_code: Optional[str] = None,
 ) -> GatekeeperVerdict:
     """
     Executes the complete 4-stage Gatekeeper verification suite.
     """
+    if not py3_patched:
+        return GatekeeperVerdict(
+            passed=False,
+            status="QUARANTINED",
+            ast_check=ASTVerificationResult(
+                passed=False,
+                original_functions=[],
+                surviving_functions=[],
+                missing_functions=[],
+                original_classes=[],
+                surviving_classes=[],
+                missing_classes=[],
+                forbidden_calls=[],
+                syntax_error="Quarantined unfixable C-ABI repository",
+            ),
+            sandbox_check=SandboxTestResult(
+                passed=False,
+                returncode=-1,
+                stdout="",
+                stderr="Repository quarantined: C-extension ABI incompatible with WebAssembly / Python 3.12",
+                expected_stdout=expected_stdout.strip(),
+                execution_ms=0.0,
+                timed_out=False,
+            ),
+            rendered_audit_html="<p class='gatekeeper-quarantine-badge'><strong>QUARANTINED:</strong> Unfixable C-extension ABI incompatible with WebAssembly.</p>",
+            claims_total=len(claims),
+            claims_verified=0,
+            claims_struck=0,
+            retry_feedback_prompt=None,
+            claim_audits=[],
+        )
+
     # 1. AST Structural Verification
     ast_res = verify_ast_integrity(py2_source, py3_patched)
     if not ast_res.passed:
@@ -450,7 +523,12 @@ def audit_resurrection(
         retry_hint = None
 
     # 3. Sandbox Execution Verification
-    sandbox_res = verify_sandbox_execution(py3_patched, golden_test_input, expected_stdout)
+    sandbox_res = verify_sandbox_execution(
+        py3_patched,
+        golden_test_input,
+        expected_stdout,
+        polyfill_code=polyfill_code,
+    )
 
     overall_passed = ast_res.passed and sandbox_res.passed and (claims_struck == 0 or len(claims) == 0)
     status = "VERIFIED" if overall_passed else ("REJECTED_HALLUCINATION" if claims_struck > 0 else "QUARANTINED")
