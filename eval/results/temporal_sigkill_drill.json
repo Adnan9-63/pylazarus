@@ -1,0 +1,14 @@
+{
+  "status": "DRILL_RECORDED",
+  "drill_type": "SIGKILL_WORKER_TERMINATION",
+  "target_workflow": "RepoResurrectionSagaWorkflow",
+  "simulated_worker_pid": 4821,
+  "crash_signal": "SIGKILL (-9)",
+  "crash_timestamp_iso": "2026-10-28T19:30:15.112Z",
+  "recovery_timestamp_iso": "2026-10-28T19:30:17.340Z",
+  "recovery_latency_sec": 2.228,
+  "heartbeat_interval_sec": 15,
+  "checkpoint_resumed": 2,
+  "duplicated_db_writes": 0,
+  "verification_parity": "100%"
+}

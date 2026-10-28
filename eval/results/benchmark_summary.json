@@ -1,0 +1,141 @@
+{
+  "evaluation_timestamp": 1793198390.3431184,
+  "total_repositories": 18,
+  "pipelines": {
+    "pipeline_1_ast_only": {
+      "name": "Deterministic AST Transpiler Only",
+      "resurrected": 10,
+      "percentage": 55.6,
+      "silent_cheats": 0
+    },
+    "pipeline_2_raw_gemma": {
+      "name": "Raw Unguarded Gemma 4",
+      "resurrected": 6,
+      "percentage": 33.3,
+      "silent_cheats": 4
+    },
+    "pipeline_3_pylazarus_guarded": {
+      "name": "PyLazarus Guarded (AST + Wayback + Tiger RRF + Gemma 4 + Gatekeeper)",
+      "resurrected": 16,
+      "percentage": 88.9,
+      "quarantined": 2,
+      "silent_cheats": 0
+    }
+  },
+  "retrieval_ablation": {
+    "vector_only_recall_at_5": 0.667,
+    "bm25_only_recall_at_5": 0.722,
+    "tiger_hybrid_rrf_recall_at_5": 0.944,
+    "rrf_fusion_lift": "+22.2%"
+  },
+  "tabpfn_viability_scores": [
+    {
+      "repo_id": "ascii-dungeon-2009",
+      "category": "syntax_bitrot",
+      "score": 0.89,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "markov-haiku-2010",
+      "category": "syntax_bitrot",
+      "score": 0.89,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "rsa-keygen-cli-2011",
+      "category": "syntax_bitrot",
+      "score": 0.92,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "csv-pivot-2011",
+      "category": "syntax_bitrot",
+      "score": 0.91,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "cron-humanizer-2012",
+      "category": "syntax_bitrot",
+      "score": 0.9,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "hex-hexdump-2010",
+      "category": "syntax_bitrot",
+      "score": 0.88,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "twit-sentiment-2011",
+      "category": "semantic_api_bitrot",
+      "score": 0.76,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "yahoo-weather-bar-2012",
+      "category": "semantic_api_bitrot",
+      "score": 0.67,
+      "verdict": "MODERATE_BITROT"
+    },
+    {
+      "repo_id": "html-table-scraper-2010",
+      "category": "semantic_api_bitrot",
+      "score": 0.82,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "unix-proc-tree-2009",
+      "category": "semantic_api_bitrot",
+      "score": 0.86,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "bencode-torrent-inspector-2011",
+      "category": "semantic_api_bitrot",
+      "score": 0.91,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "google-code-issue-export-2013",
+      "category": "semantic_api_bitrot",
+      "score": 0.78,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "md5-rainbow-check-2010",
+      "category": "semantic_api_bitrot",
+      "score": 0.91,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "ini-config-linter-2011",
+      "category": "semantic_api_bitrot",
+      "score": 0.81,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "log-ip-geolocator-2012",
+      "category": "semantic_api_bitrot",
+      "score": 0.83,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "git-stats-sparkline-2013",
+      "category": "semantic_api_bitrot",
+      "score": 0.91,
+      "verdict": "HIGH_VIABILITY"
+    },
+    {
+      "repo_id": "openssl-098-c-binding-2008",
+      "category": "unfixable_c_abi",
+      "score": 0.15,
+      "verdict": "UNFIXABLE_C_ABI_QUARANTINE"
+    },
+    {
+      "repo_id": "linux-26-ioctl-nic-probe-2009",
+      "category": "unfixable_c_abi",
+      "score": 0.13,
+      "verdict": "UNFIXABLE_C_ABI_QUARANTINE"
+    }
+  ]
+}
