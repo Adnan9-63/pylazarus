@@ -1,11 +1,11 @@
 {
-  "evaluation_timestamp": 1793198390.3431184,
+  "evaluation_timestamp": 1793205551.7266517,
   "total_repositories": 18,
   "pipelines": {
     "pipeline_1_ast_only": {
       "name": "Deterministic AST Transpiler Only",
-      "resurrected": 10,
-      "percentage": 55.6,
+      "resurrected": 11,
+      "percentage": 61.1,
       "silent_cheats": 0
     },
     "pipeline_2_raw_gemma": {
