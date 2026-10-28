@@ -37,6 +37,27 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
     unfixable_c_abi: 'Unfixable C-ABI (Quarantined)',
   }[repo.category] || 'Resurrected Artifact';
 
+  const domainTag = {
+    'ascii-dungeon-2009': 'Roguelike / Game',
+    'markov-haiku-2010': 'NLP / Poetry',
+    'rsa-keygen-cli-2011': 'Crypto / Keygen',
+    'csv-pivot-2011': 'Data / Pivot',
+    'cron-humanizer-2012': 'DevOps / Cron',
+    'hex-hexdump-2010': 'Binary / Hex',
+    'twit-sentiment-2011': 'Social / Twitter v1',
+    'yahoo-weather-bar-2012': 'Weather / Yahoo RSS',
+    'html-table-scraper-2010': 'Web / sgmllib Scraper',
+    'unix-proc-tree-2009': 'OS / Process Tree',
+    'bencode-torrent-inspector-2011': 'P2P / BitTorrent',
+    'google-code-issue-export-2013': 'Archive / Google Code',
+    'md5-rainbow-check-2010': 'Security / Hash Audit',
+    'ini-config-linter-2011': 'DevOps / INI Linter',
+    'log-ip-geolocator-2012': 'GeoIP / MaxMind',
+    'git-stats-sparkline-2013': 'Terminal / Sparkline',
+    'openssl-098-c-binding-2008': 'C-ABI / SSLv2 Crypto',
+    'linux-26-ioctl-nic-probe-2009': 'Kernel / ioctl Socket',
+  }[repo.id] || 'Utility';
+
   return (
     <div
       className={`group relative rounded-2xl border transition-all duration-300 p-5 flex flex-col justify-between ${
@@ -48,22 +69,27 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
       <div>
         {/* Top Badges */}
         <div className="flex items-center justify-between gap-2 mb-3">
-          <span
-            className={`text-[10px] font-mono px-2 py-0.5 rounded-md border ${
-              repo.category === 'syntax_bitrot'
-                ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
-                : repo.category === 'semantic_api_bitrot'
-                ? 'bg-ectoplasm-500/10 text-ectoplasm-400 border-ectoplasm-500/30'
-                : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
-            }`}
-          >
-            {categoryLabel}
-          </span>
+          <div className="flex items-center space-x-1.5 overflow-hidden">
+            <span
+              className={`text-[10px] font-mono px-2 py-0.5 rounded-md border truncate ${
+                repo.category === 'syntax_bitrot'
+                  ? 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+                  : repo.category === 'semantic_api_bitrot'
+                  ? 'bg-ectoplasm-500/10 text-ectoplasm-400 border-ectoplasm-500/30'
+                  : 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+              }`}
+            >
+              {categoryLabel}
+            </span>
+            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-crypt-850 text-slate-400 border border-crypt-700/80 hidden sm:inline">
+              {domainTag}
+            </span>
+          </div>
 
           <button
             onClick={() => onOpenTabPFN(repo)}
             title="Inspect TabPFN Viability Assessment"
-            className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-crypt-850 text-slate-400 border border-crypt-700 hover:text-slate-200 hover:border-slate-500 transition-colors flex items-center space-x-1"
+            className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-crypt-850 text-slate-400 border border-crypt-700 hover:text-slate-200 hover:border-slate-500 transition-colors flex items-center space-x-1 shrink-0"
           >
             <span>TabPFN:</span>
             <span

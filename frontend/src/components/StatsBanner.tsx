@@ -28,7 +28,7 @@ export const StatsBanner: React.FC<StatsBannerProps> = ({
               <Flame className="w-3.5 h-3.5 animate-pulse" />
               <span>Día de los Muertos & Halloween 2026 Memorial</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-display font-bold text-slate-100">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-slate-100 tracking-wide leading-tight">
               The Living Crypt of Resurrected Python Tools
             </h1>
             <p className="text-sm text-slate-400 mt-1 max-w-3xl">
