@@ -81,10 +81,10 @@ export const PyodideTerminalModal: React.FC<PyodideTerminalModalProps> = ({
     setIsRunning(true);
     const startTime = performance.now();
     const pyodide = window._pyodideInstance;
+    let stdoutAccumulator = '';
 
     try {
       // Setup stdout/stderr capturing
-      let stdoutAccumulator = '';
       pyodide.setStdout({
         batched: (msg: string) => {
           stdoutAccumulator += msg + '\n';
@@ -96,9 +96,24 @@ export const PyodideTerminalModal: React.FC<PyodideTerminalModalProps> = ({
         },
       });
 
-      // If polyfill code exists, write it into virtual FS
+      // Isolate Python memory: invalidate cached polyfills and reset path
+      const purgeScript = `
+import sys
+for mod in list(sys.modules.keys()):
+    if mod == '_lazarus_polyfill' or mod.startswith('_lazarus_'):
+        del sys.modules[mod]
+if '/' not in sys.path:
+    sys.path.insert(0, '/')
+`;
+      await pyodide.runPythonAsync(purgeScript);
+
+      // If polyfill code exists, write it into virtual FS, otherwise clean up previous file
       if (repo.polyfillCode) {
         pyodide.FS.writeFile('/_lazarus_polyfill.py', repo.polyfillCode);
+      } else {
+        try {
+          pyodide.FS.unlink('/_lazarus_polyfill.py');
+        } catch (_) {}
       }
 
       // Configure sys.argv
@@ -123,11 +138,27 @@ sys.argv = ['${repo.name}'] + ${JSON.stringify(args)}
     } catch (err: any) {
       const elapsed = Math.round(performance.now() - startTime);
       setExecDurationMs(elapsed);
-      setOutput(
-        `$ python ${repo.name}.py ${cliInput}\n` +
-        `[Execution Error]:\n${err.message}\n` +
-        `\n[Terminated with Error in ${elapsed}ms]`
-      );
+      const errMsg = err?.message || String(err);
+
+      // Gracefully handle clean sys.exit(0) or sys.exit()
+      if (
+        errMsg.includes('SystemExit: 0') ||
+        errMsg.includes('SystemExit: None') ||
+        errMsg.endsWith('SystemExit:')
+      ) {
+        setOutput(
+          `$ python ${repo.name}.py ${cliInput}\n` +
+          stdoutAccumulator +
+          `\n[Exit Code: 0] Clean termination (sys.exit) in ${elapsed}ms inside Pyodide WASM sandbox.`
+        );
+      } else {
+        setOutput(
+          `$ python ${repo.name}.py ${cliInput}\n` +
+          stdoutAccumulator +
+          `[Execution Error]:\n${errMsg}\n` +
+          `\n[Terminated with Error in ${elapsed}ms]`
+        );
+      }
     } finally {
       setIsRunning(false);
     }
