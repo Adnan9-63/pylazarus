@@ -42,21 +42,41 @@ def transpile_py2_syntax_deterministically(py2_code: str) -> Tuple[str, List[str
             if "REPLACE_DIAMOND_INEQUALITY" not in applied_rules:
                 applied_rules.append("REPLACE_DIAMOND_INEQUALITY")
 
-        # 2. print statement -> print() function (handling trailing comma and multi-arg)
-        # Match lines like: print "hello", x or print x
-        # Avoid already parenthesized print(...)
-        print_match = re.match(r"^(\s*)print\s+(?!\()(.+)$", modified)
-        if print_match:
-            indent = print_match.group(1)
-            content = print_match.group(2).rstrip()
-            if content.endswith(","):
-                # Trailing comma in Python 2 suppressed newline: print "x", -> print("x", end=" ")
-                inner = content[:-1].strip()
-                modified = f'{indent}print({inner}, end=" ")'
+        # 2. print statement -> print() function (handling chevrons >> stream, trailing comma, and multi-arg)
+        chevron_match = re.match(r"^(\s*)print\s+>>\s*([^,]+)(?:,\s*(.+))?$", modified)
+        if chevron_match:
+            indent = chevron_match.group(1)
+            stream = chevron_match.group(2).strip()
+            args = (chevron_match.group(3) or "").rstrip()
+            if args.endswith(","):
+                inner = args[:-1].strip()
+                modified = f'{indent}print({inner}, end=" ", file={stream})' if inner else f'{indent}print(end=" ", file={stream})'
+            elif args:
+                modified = f"{indent}print({args}, file={stream})"
             else:
-                modified = f"{indent}print({content})"
-            if "PRINT_STATEMENT_TO_FUNCTION" not in applied_rules:
-                applied_rules.append("PRINT_STATEMENT_TO_FUNCTION")
+                modified = f"{indent}print(file={stream})"
+            if "PRINT_CHEVRON_TO_FILE_ARG" not in applied_rules:
+                applied_rules.append("PRINT_CHEVRON_TO_FILE_ARG")
+        else:
+            print_match = re.match(r"^(\s*)print\s+(?!\()(.+)$", modified)
+            if print_match:
+                indent = print_match.group(1)
+                content = print_match.group(2).rstrip()
+                if content.endswith(","):
+                    # Trailing comma in Python 2 suppressed newline: print "x", -> print("x", end=" ")
+                    inner = content[:-1].strip()
+                    modified = f'{indent}print({inner}, end=" ")'
+                else:
+                    modified = f"{indent}print({content})"
+                if "PRINT_STATEMENT_TO_FUNCTION" not in applied_rules:
+                    applied_rules.append("PRINT_STATEMENT_TO_FUNCTION")
+
+        # 2b. Octal integer literals: 0755 -> 0o755
+        octal_match = re.search(r"(?<![\w\.])0([0-7]+)(?![\w\.])", modified)
+        if octal_match and not modified.strip().startswith("#"):
+            modified = re.sub(r"(?<![\w\.])0([0-7]+)(?![\w\.])", r"0o\1", modified)
+            if "OCTAL_LITERAL_TO_0O" not in applied_rules:
+                applied_rules.append("OCTAL_LITERAL_TO_0O")
 
         # 3. except Exception, err -> except Exception as err
         except_match = re.match(r"^(\s*except\s+[\w\.\(\)\,\s]+),\s*([a-zA-Z_]\w*)\s*:\s*(#.*)?$", modified)
@@ -141,6 +161,46 @@ def transpile_py2_syntax_deterministically(py2_code: str) -> Tuple[str, List[str
             modified = re.sub(r"\bimport commands\b", "import subprocess as commands", modified)
             if "COMMANDS_TO_SUBPROCESS" not in applied_rules:
                 applied_rules.append("COMMANDS_TO_SUBPROCESS")
+
+        # HTMLParser -> html.parser
+        if re.search(r"^\s*from HTMLParser import\b", modified):
+            modified = re.sub(r"^\s*from HTMLParser import\b", "from html.parser import", modified)
+            if "HTMLPARSER_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("HTMLPARSER_COMPAT_IMPORT")
+        elif re.search(r"^\s*import HTMLParser\b", modified):
+            modified = re.sub(r"^\s*import HTMLParser\b", "import html.parser as HTMLParser", modified)
+            if "HTMLPARSER_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("HTMLPARSER_COMPAT_IMPORT")
+
+        # Queue -> queue
+        if re.search(r"^\s*from Queue import\b", modified):
+            modified = re.sub(r"^\s*from Queue import\b", "from queue import", modified)
+            if "QUEUE_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("QUEUE_COMPAT_IMPORT")
+        elif re.search(r"^\s*import Queue\b", modified):
+            modified = re.sub(r"^\s*import Queue\b", "import queue as Queue", modified)
+            if "QUEUE_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("QUEUE_COMPAT_IMPORT")
+
+        # urlparse -> urllib.parse
+        if re.search(r"^\s*from urlparse import\b", modified):
+            modified = re.sub(r"^\s*from urlparse import\b", "from urllib.parse import", modified)
+            if "URLPARSE_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("URLPARSE_COMPAT_IMPORT")
+        elif re.search(r"^\s*import urlparse\b", modified):
+            modified = re.sub(r"^\s*import urlparse\b", "import urllib.parse as urlparse", modified)
+            if "URLPARSE_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("URLPARSE_COMPAT_IMPORT")
+
+        # ConfigParser -> configparser
+        if re.search(r"^\s*from ConfigParser import\b", modified):
+            modified = re.sub(r"^\s*from ConfigParser import\b", "from configparser import", modified)
+            if "CONFIGPARSER_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("CONFIGPARSER_COMPAT_IMPORT")
+        elif re.search(r"^\s*import ConfigParser\b", modified):
+            modified = re.sub(r"^\s*import ConfigParser\b", "import configparser as ConfigParser", modified)
+            if "CONFIGPARSER_COMPAT_IMPORT" not in applied_rules:
+                applied_rules.append("CONFIGPARSER_COMPAT_IMPORT")
 
         transformed_lines.append(modified)
 

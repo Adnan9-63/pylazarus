@@ -75,6 +75,33 @@ class TestASTTranspiler(unittest.TestCase):
         self.assertIn("import io as StringIO", py3)
         self.assertIn("import subprocess as commands", py3)
 
+    def test_print_chevron_syntax(self):
+        py2 = 'print >> sys.stderr, "Fatal error:", err'
+        py3, rules = transpile_py2_syntax_deterministically(py2)
+        self.assertEqual(py3, 'print("Fatal error:", err, file=sys.stderr)')
+        self.assertIn("PRINT_CHEVRON_TO_FILE_ARG", rules)
+
+        py2_trailing = 'print >> sys.stderr, "Partial...",'
+        py3_trailing, _ = transpile_py2_syntax_deterministically(py2_trailing)
+        self.assertEqual(py3_trailing, 'print("Partial...", end=" ", file=sys.stderr)')
+
+    def test_octal_literal_syntax(self):
+        py2 = "permissions = 0755\numask = 0022"
+        py3, rules = transpile_py2_syntax_deterministically(py2)
+        self.assertIn("0o755", py3)
+        self.assertIn("0o022", py3)
+        self.assertIn("OCTAL_LITERAL_TO_0O", rules)
+
+    def test_additional_stdlib_imports(self):
+        py2 = "from HTMLParser import HTMLParser\nfrom Queue import Queue\nfrom urlparse import urlparse"
+        py3, rules = transpile_py2_syntax_deterministically(py2)
+        self.assertIn("from html.parser import HTMLParser", py3)
+        self.assertIn("from queue import Queue", py3)
+        self.assertIn("from urllib.parse import urlparse", py3)
+        self.assertIn("HTMLPARSER_COMPAT_IMPORT", rules)
+        self.assertIn("QUEUE_COMPAT_IMPORT", rules)
+        self.assertIn("URLPARSE_COMPAT_IMPORT", rules)
+
     def test_full_script_transpilation_ast_validity(self):
         py2_script = """
 import urllib2
