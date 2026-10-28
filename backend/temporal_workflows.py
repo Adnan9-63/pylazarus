@@ -134,7 +134,7 @@ def activity_embed_and_index_tiger_db(payload: SagaInput, snapshots: List[Dict[s
 
     indexed_count = 0
     for idx, snap in enumerate(snapshots):
-        excerpt_id = f"W{idx+1}"
+        excerpt_id = f"{payload.repo_id}_W{idx+1}"
         text = snap["extracted_text"]
         vec = router.embed_text(text, task_prefix=f"title: {payload.repo_name} - wayback ({payload.last_commit_year}) | text: ")
 
