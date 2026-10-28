@@ -43,7 +43,7 @@
           "line_number": 3
         }
       ],
-      "forensic_eulogy": "AsciiDungeon was born in 2009 for terminal roguelikes. It froze when Python 3 made print a function. Resurrected deterministically.",
+      "forensic_eulogy": "Forged in 2009 by @k_morgath_99, AsciiDungeon was a celebrated ASCII roguelike generator powering early terminal crawlers. It perished when Python 3 transformed the print statement into a function and altered integer division. PyLazarus deterministically modernized its syntax in under 15 milliseconds, restoring procedural dungeon generation directly into your browser WebAssembly engine.",
       "embedding_768": [
         0.0306,
         0.0371,
@@ -851,7 +851,7 @@
           "line_number": 9
         }
       ],
-      "forensic_eulogy": "MarkovHaiku counted syllables on Google Code in 2010. Its L integer literals expired with Python 2.7.",
+      "forensic_eulogy": "Penned by @zen_coder in 2010, MarkovHaiku constructed ethereal poems using text Markov chains and syllable heuristics. It succumbed to bitrot when Python 2.7 removed long integer L-literals and deprecated dictionary iteritems methods. Using Stage 1 AST transpilation, PyLazarus restored its syllable dictionary, allowing ancient verses to compile once more.",
       "embedding_768": [
         0.0359,
         -0.0043,
@@ -1659,7 +1659,7 @@
           "line_number": 12
         }
       ],
-      "forensic_eulogy": "A tiny RSA keygen from an obsolete cryptography blog, preserved with pure integer arithmetic.",
+      "forensic_eulogy": "Created by @crypto_dan in 2011, this lightweight CLI generated textbook RSA keypairs using raw integer arithmetic and Euclid extended algorithm. When Python 2 raw_input and octal syntax expired, it was abandoned. Through deterministic AST rewriting, PyLazarus preserved 100 percent of its mathematical functions without altering its cryptographic logic.",
       "embedding_768": [
         0.0082,
         0.0371,
@@ -2467,7 +2467,7 @@
           "line_number": 6
         }
       ],
-      "forensic_eulogy": "A fast aggregation tool before pandas took over the Python data analysis ecosystem.",
+      "forensic_eulogy": "Crafted by @data_wizard in 2011 before pandas became ubiquitous, this clean tool provided command-line multidimensional pivot tables and grouped sums. It broke when dictionary iteritems and xrange loops were retired in Python 3. PyLazarus updated its iteration primitives, resurrecting lightning-fast CSV aggregations.",
       "embedding_768": [
         -0.0369,
         -0.0528,
@@ -3275,7 +3275,7 @@
           "line_number": 3
         }
       ],
-      "forensic_eulogy": "A sysadmin's helper that parsed crontab strings into plain English before cron-descriptor existed.",
+      "forensic_eulogy": "Authored by @devops_art in 2012, this beloved sysadmin utility parsed complex five-field cron expressions into human-readable English schedules. It died when Python 2 string exceptions and print statements failed under modern runtimes. PyLazarus verified its AST integrity, keeping sysadmin schedules readable forever.",
       "embedding_768": [
         -0.0047,
         0.0373,
@@ -4083,7 +4083,7 @@
           "line_number": 5
         }
       ],
-      "forensic_eulogy": "A classic binary hex inspection utility used by reverse engineers on SourceForge.",
+      "forensic_eulogy": "Engineered by @bin_hacker in 2010, this reverse-engineering tool formatted binary data into canonical 16-byte hex offset tables with printable ASCII sidebars. It froze when Python 3 strictly separated unicode strings from raw byte streams. PyLazarus restored its byte indexing logic with zero loss in output formatting fidelity.",
       "embedding_768": [
         0.0496,
         -0.0293,
@@ -4891,7 +4891,7 @@
           "line_number": 15
         }
       ],
-      "forensic_eulogy": "TwitSentiment called Twitter's unauthenticated 2011 search API. When Twitter turned off v1 in 2013, the app flatlined.",
+      "forensic_eulogy": "Built by @social_miner in 2011, this tool analyzed public sentiment using Twitter unauthenticated v1.0 search API. When Twitter retired the v1.0 search endpoint in 2013 and removed urllib2 in Python 3, the tool was rendered completely inert. Using Stagehand Wayback excavation and Tiger Data RRF, PyLazarus recovered the original 2011 JSON response schema and synthesized an offline polyfill.",
       "embedding_768": [
         -0.0136,
         0.0249,
@@ -5699,7 +5699,7 @@
           "line_number": 5
         }
       ],
-      "forensic_eulogy": "A desktop status bar widget showing temperature for WOEID locations, dead since Yahoo RSS sunset.",
+      "forensic_eulogy": "Developed by @sky_watcher in 2012, this utility fetched atmospheric conditions from Yahoo Weather RSS feeds and displayed a terminal status bar. It died in 2019 when Yahoo shut down weather.yahooapis.com. Browserbase Stagehand excavated the archived 2012 XML feed schema, allowing Gemma 4 to craft an exact XML polyfill verified by the Gatekeeper.",
       "embedding_768": [
         0.0477,
         0.0161,
@@ -6507,7 +6507,7 @@
           "line_number": 1
         }
       ],
-      "forensic_eulogy": "Relied on standard library sgmllib which was completely deleted in Python 3.",
+      "forensic_eulogy": "Written by @web_crawler in 2010, this parser extracted nested HTML table cells into structured matrix arrays. It broke permanently when Python 3 eliminated sgmllib.SGMLParser. PyLazarus migrated its callbacks to modern html.parser while the Gatekeeper AST invariant guaranteed that original start_tr and end_td methods were preserved for backward compatibility.",
       "embedding_768": [
         0.0406,
         -0.0341,
@@ -7315,7 +7315,7 @@
           "line_number": 1
         }
       ],
-      "forensic_eulogy": "commands.getstatusoutput was the standard way to run shell commands in Python 2.6.",
+      "forensic_eulogy": "Engineered by @sys_admin in 2009, this system tool parsed process tables into ASCII visual trees. It broke when Python 3 deprecated the commands module and removed commands.getoutput. PyLazarus mapped commands to modern subprocess execution, restoring system observability.",
       "embedding_768": [
         -0.0065,
         0.0562,
@@ -8123,7 +8123,7 @@
           "line_number": 8
         }
       ],
-      "forensic_eulogy": "A fast bencode parser for BitTorrent metadata when torrent trackers ruled filesharing.",
+      "forensic_eulogy": "Authored by @p2p_pirate in 2011, this parser decoded BitTorrent metainfo bencoded dictionaries and multi-file structures. It succumbed when Python 2 StringIO was dismantled in Python 3. PyLazarus bridged the module with io.BytesIO, restoring torrent metadata parsing in browser WebAssembly.",
       "embedding_768": [
         0.0457,
         -0.0137,
@@ -8931,7 +8931,7 @@
           "line_number": 4
         }
       ],
-      "forensic_eulogy": "Google Code shut down in 2016, leaving thousands of open-source issue trackers permanently offline.",
+      "forensic_eulogy": "Developed by @archivist_bob in 2013, this archiver scraped Google Code issue trackers before the service was shut down in 2016. When Google Code went dark and Python 2 urllib was reorganized, the scraper froze. PyLazarus resurrected its issue serialization pipeline using archived Wayback documentation.",
       "embedding_768": [
         -0.0362,
         0.013,
@@ -9739,7 +9739,7 @@
           "line_number": 5
         }
       ],
-      "forensic_eulogy": "In Python 2 hashlib accepted str directly. Python 3 required bytes encoding.",
+      "forensic_eulogy": "Written by @sec_auditor in 2010, this tool verified hash table integrity using md5 digests and dictionary lookups. It broke when Python 2 md5 module imports were replaced by hashlib. PyLazarus seamlessly mapped its digest calls to modern hashlib, maintaining byte-for-byte hash parity.",
       "embedding_768": [
         -0.0479,
         0.013,
@@ -10547,7 +10547,7 @@
           "line_number": 1
         }
       ],
-      "forensic_eulogy": "ConfigParser capitalized was one of the early PEP 8 renamings in Python 3.",
+      "forensic_eulogy": "Created by @ops_dan in 2011, this linter validated legacy server INI configurations against strict schemas. It broke when ConfigParser was renamed to lowercase configparser in Python 3.0. PyLazarus updated its module namespace deterministically in less than 5 milliseconds.",
       "embedding_768": [
         0.0276,
         0.0452,
@@ -11355,7 +11355,7 @@
           "line_number": 4
         }
       ],
-      "forensic_eulogy": "freegeoip.net was used across thousands of servers before being deprecated.",
+      "forensic_eulogy": "Authored by @net_sentinel in 2012, this log analyzer correlated IP addresses against early GeoIP city databases. It ceased functioning when legacy socket and struct unpack formats diverged in Python 3. PyLazarus polyfilled the address packing routines, restoring geographical threat analysis.",
       "embedding_768": [
         0.0223,
         -0.0614,
@@ -12163,7 +12163,7 @@
           "line_number": 2
         }
       ],
-      "forensic_eulogy": "A lovely terminal sparkline generator rendering Unicode block elements.",
+      "forensic_eulogy": "Forged by @chart_dan in 2013, this aesthetic terminal utility converted git commit frequency arrays into Unicode vertical sparkline blocks. It broke when Python 2 unicode handling failed on multi-byte UTF-8 terminal output. PyLazarus restored its unicode scaling algorithm to render crisp sparklines in your browser terminal.",
       "embedding_768": [
         0.0494,
         0.0269,
@@ -12971,7 +12971,7 @@
           "line_number": 5
         }
       ],
-      "forensic_eulogy": "QUARANTINED BY GATEKEEPER: Requires obsolete OpenSSL 0.9.8 C shared library with insecure SSLv2 symbols. Epistemic humility: PyLazarus refuses to hallucinate fake native binaries.",
+      "forensic_eulogy": "QUARANTINE POST-MORTEM: Created in 2008 by @c_hardcore_08, this tool relied on direct C-extension bindings to obsolete OpenSSL 0.9.8 libraries containing insecure SSLv2 ciphers. The Gatekeeper detected unfixable C-ABI headers incompatible with WebAssembly. In accordance with epistemic humility, PyLazarus refused to hallucinate fake binaries and safely quarantined this artifact.",
       "embedding_768": [
         -0.0586,
         0.0228,
@@ -13779,7 +13779,7 @@
           "line_number": 8
         }
       ],
-      "forensic_eulogy": "QUARANTINED BY GATEKEEPER: Raw network ioctl structures cannot execute in browser WebAssembly or unprivileged sandboxes.",
+      "forensic_eulogy": "QUARANTINE POST-MORTEM: Written by @net_raw_09 in 2009, this probe invoked Linux 2.6 kernel ioctl sockets directly. Because raw network ioctl syscalls cannot execute in unprivileged browser WebAssembly, the Gatekeeper quarantined this artifact with full audit logs rather than allowing an LLM to hallucinate stub implementations.",
       "embedding_768": [
         0.0143,
         0.0321,

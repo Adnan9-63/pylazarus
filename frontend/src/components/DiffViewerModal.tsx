@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Repository } from '../types';
-import { X, Clock, Archive, Sparkles, Copy, Check } from 'lucide-react';
+import { X, Clock, Archive, Sparkles, Copy, Check, Volume2, VolumeX } from 'lucide-react';
 
 interface DiffViewerModalProps {
   repo: Repository | null;
@@ -9,8 +9,33 @@ interface DiffViewerModalProps {
 
 export const DiffViewerModal: React.FC<DiffViewerModalProps> = ({ repo, onClose }) => {
   const [copiedPane, setCopiedPane] = useState<string | null>(null);
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   if (!repo) return null;
+
+  const handleClose = () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    setIsSpeaking(false);
+    onClose();
+  };
+
+  const toggleVoiceTour = () => {
+    if (isSpeaking) {
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    } else {
+      setIsSpeaking(true);
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const textToSpeak = repo.forensicEulogy || `Analyzing code triangulation for ${repo.name}. Python 2 source compared against Wayback excavation schemas and resurrected Python 3 output.`;
+        const utter = new SpeechSynthesisUtterance(textToSpeak);
+        utter.rate = 0.9;
+        utter.pitch = 0.85;
+        utter.onend = () => setIsSpeaking(false);
+        window.speechSynthesis.speak(utter);
+      }
+    }
+  };
 
   const copyToClipboard = (text: string, paneId: string) => {
     navigator.clipboard.writeText(text);
@@ -55,12 +80,26 @@ Status: Syntax & stdlib module refactored in Python 3.0.
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-crypt-800 transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={toggleVoiceTour}
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono border transition-all flex items-center space-x-1.5 ${
+                isSpeaking
+                  ? 'bg-purple-500/20 text-purple-300 border-purple-500/50 animate-pulse'
+                  : 'bg-crypt-850 text-slate-300 border-crypt-700 hover:text-slate-100 hover:border-slate-500'
+              }`}
+            >
+              {isSpeaking ? <VolumeX className="w-3.5 h-3.5 text-purple-400" /> : <Volume2 className="w-3.5 h-3.5 text-purple-400" />}
+              <span>{isSpeaking ? 'Mute Voice Tour' : '🎙️ Narrate Code Autopsy'}</span>
+            </button>
+
+            <button
+              onClick={handleClose}
+              className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-crypt-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* 3-Pane Triangulation Grid */}
