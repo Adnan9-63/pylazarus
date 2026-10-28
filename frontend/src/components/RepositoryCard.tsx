@@ -35,7 +35,7 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
     syntax_bitrot: 'Syntax Bitrot (AST Upgraded)',
     semantic_api_bitrot: 'Semantic API Bitrot (Wayback + RRF)',
     unfixable_c_abi: 'Unfixable C-ABI (Quarantined)',
-  }[repo.category];
+  }[repo.category] || 'Resurrected Artifact';
 
   return (
     <div

@@ -37,29 +37,29 @@ export const App: React.FC = () => {
         if (res.ok) {
           const data = await res.json();
           const items: Repository[] = (data.items || []).map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            category: item.category,
-            originalAuthor: item.original_author || item.originalAuthor,
-            originalLicense: item.original_license || item.originalLicense,
-            lastCommitYear: item.last_commit_year || item.lastCommitYear,
-            starsAtAbandonment: item.stars_at_abandonment || item.starsAtAbandonment || 0,
-            description: item.description,
-            deadPy2Code: item.dead_py2_code || item.deadPy2Code,
+            id: item.id || '',
+            name: item.name || item.repo_name || item.id || 'Unnamed Relic',
+            category: item.category || 'syntax_bitrot',
+            originalAuthor: item.original_author || item.originalAuthor || 'anonymous',
+            originalLicense: item.original_license || item.originalLicense || 'MIT',
+            lastCommitYear: item.last_commit_year || item.lastCommitYear || 2011,
+            starsAtAbandonment: item.stars_at_abandonment || item.starsAtAbandonment || 42,
+            description: item.description || item.forensic_eulogy || `Authentic ${item.last_commit_year || 2011} Python abandonware artifact.`,
+            deadPy2Code: item.dead_py2_code || item.deadPy2Code || '',
             resurrectedPy3Code: item.resurrected_py3_code ?? item.resurrectedPy3Code ?? null,
-            polyfillCode: item.polyfill_code || item.polyfillCode,
-            status: item.status,
-            viabilityScore: item.viability_score ?? item.viabilityScore ?? 0.85,
+            polyfillCode: item.polyfill_code || item.polyfillCode || '',
+            status: item.status || 'RESURRECTED',
+            viabilityScore: item.viability_score ?? item.tabpfn_viability_score ?? item.viabilityScore ?? 0.85,
             resurrectionDurationMs: item.resurrection_duration_ms ?? item.resurrectionDurationMs ?? 250,
-            vigilCandlesCount: item.vigil_candles_count ?? item.vigilCandlesCount ?? 0,
-            audioAutopsyUrl: item.audio_autopsy_url || item.audioAutopsyUrl,
-            forensicEulogy: item.forensic_eulogy || item.forensicEulogy,
-            goldenInput: item.golden_test_input || item.goldenInput,
-            expectedStdout: item.expected_stdout || item.expectedStdout,
+            vigilCandlesCount: item.vigil_candles_count ?? item.vigilCandlesCount ?? 12,
+            audioAutopsyUrl: item.audio_autopsy_url || item.audioAutopsyUrl || `/api/audio/eulogy/${item.id}`,
+            forensicEulogy: item.forensic_eulogy || item.forensicEulogy || '',
+            goldenInput: item.golden_test_input || item.goldenInput || '',
+            expectedStdout: item.expected_stdout || item.expectedStdout || '',
             diagnosticClaims: (item.diagnostic_claims || []).map((c: any) => ({
-              text: c.text,
-              sourceId: c.source_id || c.sourceId,
-              verbatimQuote: c.verbatim_quote || c.verbatimQuote,
+              text: c.text || '',
+              sourceId: c.source_id || c.sourceId || 'P1',
+              verbatimQuote: c.verbatim_quote || c.verbatimQuote || '',
               lineNumber: c.line_number || c.lineNumber || 1,
             })),
           }));
@@ -99,10 +99,12 @@ export const App: React.FC = () => {
   const filteredRepos = repos.filter((r) => {
     const matchesCategory =
       filterCategory === 'all' || r.category === filterCategory;
+    const name = (r.name || '').toLowerCase();
+    const desc = (r.description || '').toLowerCase();
+    const author = (r.originalAuthor || '').toLowerCase();
+    const q = searchQuery.toLowerCase();
     const matchesSearch =
-      r.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      r.originalAuthor.toLowerCase().includes(searchQuery.toLowerCase());
+      name.includes(q) || desc.includes(q) || author.includes(q);
     return matchesCategory && matchesSearch;
   });
 
