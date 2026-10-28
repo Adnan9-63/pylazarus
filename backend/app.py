@@ -29,7 +29,12 @@ from pydantic import BaseModel, Field
 
 from backend.ast_transpiler import transpile_py2_syntax_deterministically
 from backend.audio_autopsy import AudioAutopsySynthesizer
-from backend.gatekeeper import DiagnosticClaim, audit_resurrection, verify_sandbox_execution
+from backend.gatekeeper import (
+    DiagnosticClaim,
+    audit_resurrection,
+    verify_ast_integrity,
+    verify_sandbox_execution,
+)
 from backend.inference import InferenceRouter
 from backend.observability import (
     get_in_app_telemetry_buffer,
@@ -321,11 +326,21 @@ def resurrect_repository(req: ResurrectRequest):
 
 @app.post("/api/sandbox/execute")
 def execute_sandbox_code(req: SandboxExecuteRequest):
+    # Enforce AST security guard against forbidden syscalls
+    ast_res = verify_ast_integrity("", req.code)
+    if ast_res.forbidden_calls:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Security rejection: Forbidden syscall(s) detected: {', '.join(ast_res.forbidden_calls)}",
+        )
+    # Clamp execution timeout to prevent DoS (min 0.5s, max 8.0s)
+    safe_timeout = min(max(float(req.timeout_sec), 0.5), 8.0)
+
     res = verify_sandbox_execution(
         py3_patched=req.code,
         golden_test_input=req.input_args,
         expected_stdout=req.expected_stdout,
-        timeout=req.timeout_sec,
+        timeout=safe_timeout,
     )
     return {
         "passed": res.passed,
