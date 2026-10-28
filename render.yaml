@@ -1,0 +1,54 @@
+# PyLazarus Multi-Service Render Blueprint (render.yaml)
+# Production deployment specification for Hacktoberfest 2026 Week 4
+
+services:
+  # 1. FastAPI Web Server & Living WebAssembly Arcade Gateway
+  - type: web
+    name: pylazarus-web
+    runtime: python
+    region: oregon
+    plan: starter
+    buildCommand: "pip install -r requirements.txt && python -m backend.scripts.init_db_and_seed"
+    startCommand: "uvicorn backend.app:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /healthz
+    disk:
+      name: pylazarus-data
+      mountPath: /data
+      sizeGB: 2
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEFAULT_REPLAY_MODE
+        value: "true"
+      - key: TIGER_DATABASE_URL
+        sync: false
+      - key: SENTRY_DSN
+        sync: false
+      - key: ELEVENLABS_API_KEY
+        sync: false
+      - key: ELEVENLABS_VOICE_ID
+        value: "pNInz6obpgDQGcFmaJgB"
+      - key: TEMPORAL_TARGET_HOST
+        value: "localhost:7233"
+
+  # 2. Temporal Saga Background Worker
+  - type: worker
+    name: pylazarus-temporal-worker
+    runtime: python
+    region: oregon
+    plan: starter
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python -m backend.run_temporal_worker"
+    disk:
+      name: pylazarus-data
+      mountPath: /data
+      sizeGB: 2
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: DEFAULT_REPLAY_MODE
+        value: "true"
+      - key: TIGER_DATABASE_URL
+        sync: false
+      - key: TEMPORAL_TARGET_HOST
+        value: "localhost:7233"
