@@ -365,6 +365,120 @@ def get_observability_spans():
     }
 
 
+@app.get("/healthz")
+def get_healthz():
+    return {"status": "HEALTHY", "service": "pylazarus"}
+
+
+@app.get("/api/observability/traces")
+def get_observability_traces():
+    return get_observability_spans()
+
+
+@app.get("/api/feed/crypt")
+def get_crypt_feed():
+    storage = get_storage_engine()
+    fixtures_path = os.path.join(os.path.dirname(__file__), "..", "data", "fixtures", "benchmark_18_repos.json")
+    if os.path.exists(fixtures_path):
+        with open(fixtures_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        items = []
+        vigils = storage.get_vigil_counts()
+        for rid, r in data.get("repositories", {}).items():
+            item = dict(r)
+            item["id"] = rid
+            item["vigil_candles_count"] = vigils.get(rid, 12)
+            items.append(item)
+        return {"count": len(items), "items": items}
+    return list_repositories()
+
+
+@app.get("/api/gatekeeper/audit/{repo_id}")
+def get_gatekeeper_audit(repo_id: str):
+    storage = get_storage_engine()
+    router = InferenceRouter()
+    fixtures_path = os.path.join(os.path.dirname(__file__), "..", "data", "fixtures", "benchmark_18_repos.json")
+    with open(fixtures_path, "r", encoding="utf-8") as f:
+        r = json.load(f)["repositories"].get(repo_id, {})
+    patch = router.generate_resurrection_patch(repo_id, r.get("dead_py2_code", ""), "", force_replay=True)
+    claims = [
+        DiagnosticClaim(c["text"], c["source_id"], c["verbatim_quote"], c.get("line_number", 1))
+        for c in patch.get("diagnostic_claims", [])
+    ]
+    excerpts = storage.hybrid_search(repo_id, r.get("repo_name", ""), [0.1] * 768)
+    verdict = audit_resurrection(
+        py2_source=r.get("dead_py2_code", ""),
+        py3_patched=patch.get("resurrected_code"),
+        claims=claims,
+        excerpts=excerpts,
+        golden_test_input=r.get("golden_test_input", ""),
+        expected_stdout=r.get("expected_stdout", ""),
+        polyfill_code=patch.get("polyfill_code", ""),
+    )
+    return {
+        "passed": verdict.passed,
+        "status": verdict.status,
+        "ast_check": {
+            "passed": verdict.ast_check.passed,
+            "missing_functions": verdict.ast_check.missing_functions,
+            "missing_classes": verdict.ast_check.missing_classes,
+            "forbidden_calls": verdict.ast_check.forbidden_calls,
+            "syntax_error": verdict.ast_check.syntax_error,
+        },
+        "sandbox_check": {
+            "passed": verdict.sandbox_check.passed,
+            "returncode": verdict.sandbox_check.returncode,
+            "stdout": verdict.sandbox_check.stdout,
+            "stderr": verdict.sandbox_check.stderr,
+            "execution_ms": verdict.sandbox_check.execution_ms,
+        },
+        "rendered_audit_html": verdict.rendered_audit_html,
+        "claims_total": verdict.claims_total,
+        "claims_verified": verdict.claims_verified,
+        "claims_struck": verdict.claims_struck,
+    }
+
+
+@app.post("/api/feed/light-candle/{repo_id}")
+def feed_light_candle(repo_id: str, payload: Dict[str, Any] = None):
+    storage = get_storage_engine()
+    storage.record_vigil_light(repo_id, action_type="candle_lit", visitor_location="Social Arcade")
+    updated = storage.get_vigil_counts(repo_id)
+    return {"status": "CANDLE_LIT", "repo_id": repo_id, "vigil_counts": updated}
+
+
+@app.get("/api/eval/summary")
+def get_eval_summary():
+    p = os.path.join(os.path.dirname(__file__), "..", "eval", "results", "benchmark_summary.json")
+    if os.path.exists(p):
+        with open(p, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {"error": "Benchmark summary not generated yet"}
+
+
+@app.get("/api/audio/eulogy/{repo_id}")
+def get_audio_eulogy(repo_id: str):
+    synth = AudioAutopsySynthesizer()
+    fixtures_path = os.path.join(os.path.dirname(__file__), "..", "data", "fixtures", "benchmark_18_repos.json")
+    with open(fixtures_path, "r", encoding="utf-8") as f:
+        r = json.load(f)["repositories"].get(repo_id, {})
+    eulogy = r.get("forensic_eulogy", f"Here lies {repo_id}.")
+    audio_res = synth.synthesize_autopsy_eulogy(repo_id, eulogy)
+    if os.path.exists(audio_res.cached_mp3_path):
+        return FileResponse(audio_res.cached_mp3_path, media_type="audio/mpeg")
+    raise HTTPException(status_code=404, detail="Audio eulogy not found")
+
+
+@app.get("/api/viability/triage/{repo_id}")
+def get_viability_triage(repo_id: str):
+    fixtures_path = os.path.join(os.path.dirname(__file__), "..", "data", "fixtures", "benchmark_18_repos.json")
+    with open(fixtures_path, "r", encoding="utf-8") as f:
+        r = json.load(f)["repositories"].get(repo_id, {})
+    features = extract_ast_bitrot_features(r.get("dead_py2_code", ""), r.get("last_commit_year", 2011))
+    predictor = TabPFNViabilityPredictor()
+    return predictor.predict_viability(features)
+
+
 @app.get("/api/temporal/sigkill-drill")
 def get_temporal_sigkill_drill_log():
     drill_file = os.path.join(os.path.dirname(__file__), "..", "eval", "results", "temporal_sigkill_drill.json")
@@ -435,5 +549,19 @@ def internal_verify_gatekeeper(req: GatekeeperVerifyRequest):
 
 # Serve Frontend Static Build if present
 frontend_dist = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
-if os.path.exists(frontend_dist):
-    app.mount("/", StaticFiles(directory=frontend_dist, html=True), name="static")
+assets_dir = os.path.join(frontend_dist, "assets")
+
+if os.path.exists(assets_dir):
+    app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+@app.get("/")
+def serve_index():
+    index_file = os.path.join(frontend_dist, "index.html")
+    if os.path.exists(index_file):
+        return FileResponse(index_file)
+    return {
+        "service": "PyLazarus: Abandonware Resurrection Engine",
+        "status": "ONLINE",
+        "docs": "/docs",
+        "living_crypt": "/api/feed/crypt",
+    }
