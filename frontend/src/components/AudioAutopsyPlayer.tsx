@@ -17,6 +17,9 @@ export const AudioAutopsyPlayer: React.FC<AudioAutopsyPlayerProps> = ({ repo, on
     if (!repo) return;
     setIsPlaying(false);
     setProgress(0);
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
     // Request audio stream from FastAPI backend
     setAudioUrl(`/api/audio/eulogy/${repo.id}`);
   }, [repo]);
@@ -24,13 +27,35 @@ export const AudioAutopsyPlayer: React.FC<AudioAutopsyPlayerProps> = ({ repo, on
   if (!repo) return null;
 
   const togglePlay = () => {
-    if (!audioRef.current) return;
     if (isPlaying) {
-      audioRef.current.pause();
+      if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+      if (audioRef.current) audioRef.current.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.play().then(() => setIsPlaying(true)).catch((e) => console.error(e));
+      setIsPlaying(true);
+      // Try playing audio file, with speech synthesis fallback
+      if (audioRef.current) {
+        audioRef.current
+          .play()
+          .then(() => setIsPlaying(true))
+          .catch(() => {
+            if ('speechSynthesis' in window) {
+              const textToSpeak = repo.forensicEulogy || `Here lies ${repo.name}, written in ${repo.lastCommitYear}. After a decade in the dark, PyLazarus has rekindled its flame.`;
+              const utter = new SpeechSynthesisUtterance(textToSpeak);
+              utter.rate = 0.9;
+              utter.pitch = 0.85;
+              utter.onend = () => setIsPlaying(false);
+              window.speechSynthesis.speak(utter);
+            }
+          });
+      }
     }
+  };
+
+  const handleClose = () => {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    if (audioRef.current) audioRef.current.pause();
+    onClose();
   };
 
   const handleTimeUpdate = () => {
@@ -65,7 +90,7 @@ export const AudioAutopsyPlayer: React.FC<AudioAutopsyPlayerProps> = ({ repo, on
           </div>
 
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-crypt-800 transition-colors"
           >
             <X className="w-5 h-5" />
