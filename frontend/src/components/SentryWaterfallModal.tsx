@@ -10,25 +10,43 @@ interface SentryWaterfallModalProps {
 export const SentryWaterfallModal: React.FC<SentryWaterfallModalProps> = ({ isOpen, onClose }) => {
   const [traces, setTraces] = useState<TraceSpan[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [triggering, setTriggering] = useState<boolean>(false);
+
+  const fetchTraces = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch('/api/observability/traces');
+      if (res.ok) {
+        const data = await res.json();
+        setTraces(data.flat_spans || data.traces || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!isOpen) return;
-    const fetchTraces = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch('/api/observability/traces');
-        if (res.ok) {
-          const data = await res.json();
-          setTraces(data.traces || []);
-        }
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTraces();
+    if (isOpen) {
+      fetchTraces();
+    }
   }, [isOpen]);
+
+  const handleTriggerLiveTrace = async () => {
+    setTriggering(true);
+    try {
+      const res = await fetch('/api/observability/trigger-sample', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        setTraces(data.flat_spans || []);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setTriggering(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -56,9 +74,19 @@ export const SentryWaterfallModal: React.FC<SentryWaterfallModalProps> = ({ isOp
             </div>
           </div>
 
-          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-crypt-800">
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleTriggerLiveTrace}
+              disabled={triggering}
+              className="px-3 py-1.5 rounded-lg text-xs font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40 hover:bg-purple-500/30 transition-all flex items-center space-x-1.5"
+            >
+              <Activity className={`w-3.5 h-3.5 ${triggering ? 'animate-spin' : ''}`} />
+              <span>{triggering ? 'Tracing...' : '⚡ Trigger Live Trace'}</span>
+            </button>
+            <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-crypt-800">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Body */}
@@ -83,25 +111,43 @@ export const SentryWaterfallModal: React.FC<SentryWaterfallModalProps> = ({ isOp
               traces.map((span, idx) => (
                 <div
                   key={idx}
-                  className="p-3 rounded-xl bg-crypt-950/60 border border-crypt-800 font-mono text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2"
+                  className={`p-3 rounded-xl bg-crypt-950/60 border border-crypt-800 font-mono text-xs flex flex-col gap-2 ${
+                    span.parent_span_id ? 'ml-4 border-l-2 border-l-purple-500/50' : 'border-crypt-700'
+                  }`}
                 >
-                  <div className="flex items-center space-x-2">
-                    <span className="w-2 h-2 rounded-full bg-ectoplasm-400" />
-                    <span className="font-bold text-slate-200">{span.span_name}</span>
-                    <span className="text-slate-500 text-[11px]">({span.model || 'Deterministic Code'})</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center space-x-2">
+                      <span className={`w-2 h-2 rounded-full ${span.parent_span_id ? 'bg-purple-400' : 'bg-ectoplasm-400'}`} />
+                      <span className="font-bold text-slate-200">{span.span_name}</span>
+                      <span className="text-slate-500 text-[11px]">({span.model || 'Deterministic Code'})</span>
+                    </div>
+
+                    <div className="flex items-center space-x-3 text-[11px] text-slate-400">
+                      <span>Latency: <strong className="text-ectoplasm-400">{span.latency_ms}ms</strong></span>
+                      <span className="px-1.5 py-0.5 rounded bg-crypt-850 text-slate-300 border border-crypt-700">
+                        PII Scrubber: OK
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center space-x-3 text-[11px] text-slate-400">
-                    <span>Latency: <strong className="text-ectoplasm-400">{span.latency_ms}ms</strong></span>
-                    <span className="px-1.5 py-0.5 rounded bg-crypt-850 text-slate-300 border border-crypt-700">
-                      PII Scrubber: OK
-                    </span>
+                  {/* Relative Latency Bar */}
+                  <div className="w-full bg-crypt-900 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className={`h-full ${
+                        span.span_name.includes('gemma4') || span.span_name.includes('LLM')
+                          ? 'bg-purple-500'
+                          : span.span_name.includes('AST')
+                          ? 'bg-ectoplasm-400'
+                          : 'bg-blue-400'
+                      }`}
+                      style={{ width: `${Math.min(100, Math.max(8, (span.latency_ms / 385) * 100))}%` }}
+                    />
                   </div>
                 </div>
               ))
             ) : (
               <div className="p-8 text-center text-slate-500 font-mono text-xs">
-                No active live spans in buffer. Trigger a resurrection or benchmark to observe telemetry.
+                No active live spans in buffer. Click '⚡ Trigger Live Trace' above to generate real-time telemetry.
               </div>
             )}
           </div>
