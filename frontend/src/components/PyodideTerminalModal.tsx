@@ -209,9 +209,33 @@ sys.argv = ['${repo.name}'] + ${JSON.stringify(args)}
 
             {/* CLI Argument Input */}
             <div className="mt-3">
-              <label className="text-[11px] font-mono text-slate-400 block mb-1">
-                Command Line Arguments (sys.argv):
-              </label>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-[11px] font-mono text-slate-400">
+                  Command Line Arguments (sys.argv):
+                </label>
+                <div className="flex items-center space-x-1.5">
+                  {repo.goldenInput && (
+                    <button
+                      onClick={() => setCliInput(repo.goldenInput || '')}
+                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-crypt-850 hover:bg-crypt-800 text-ectoplasm-400 border border-crypt-700"
+                    >
+                      Default Test Input
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setCliInput('--help')}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded bg-crypt-850 hover:bg-crypt-800 text-slate-400 border border-crypt-700"
+                  >
+                    --help
+                  </button>
+                  <button
+                    onClick={() => setCliInput('')}
+                    className="text-[10px] font-mono px-2 py-0.5 rounded bg-crypt-850 hover:bg-crypt-800 text-slate-500 border border-crypt-700"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
               <input
                 type="text"
                 value={cliInput}
