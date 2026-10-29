@@ -18,7 +18,9 @@ Endpoints:
 from __future__ import annotations
 
 import json
+import logging
 import os
+import sys
 import time
 from typing import Any, Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Request
@@ -26,6 +28,18 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
+
+# Configure structured file and console logging
+os.makedirs("logs", exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    handlers=[
+        logging.FileHandler("logs/pylazarus.log", encoding="utf-8"),
+        logging.StreamHandler(sys.stdout),
+    ],
+)
+logger = logging.getLogger("pylazarus")
 
 from backend.ast_transpiler import transpile_py2_syntax_deterministically
 from backend.audio_autopsy import AudioAutopsySynthesizer
@@ -63,40 +77,51 @@ app.add_middleware(
 )
 
 
+@app.on_event("startup")
+def on_startup():
+    logger.info("Initializing PyLazarus Abandonware Resurrection Engine...")
+    try:
+        from backend.self_check import run_full_self_check
+        run_full_self_check(silent=True)
+        logger.info("Preflight reliability self-check passed cleanly.")
+    except Exception as e:
+        logger.warning(f"Preflight self-check warning: {e}")
+
+
 # ============================================================================
 # Request / Response Schemas
 # ============================================================================
 
 class ResurrectRequest(BaseModel):
-    repo_id: str
-    custom_py2_code: Optional[str] = None
+    repo_id: str = Field(..., max_length=128)
+    custom_py2_code: Optional[str] = Field(None, max_length=2_000_000)
     force_replay: bool = False
     simulate_cheat: bool = False
 
 
 class SandboxExecuteRequest(BaseModel):
-    code: str
-    input_args: str = ""
-    expected_stdout: str = ""
-    timeout_sec: float = 4.0
+    code: str = Field(..., max_length=1_000_000)
+    input_args: str = Field("", max_length=10_000)
+    expected_stdout: str = Field("", max_length=500_000)
+    timeout_sec: float = Field(4.0, ge=0.5, le=10.0)
 
 
 class VigilLightRequest(BaseModel):
-    repo_id: str
-    action_type: str = "candle_lit"
-    visitor_location: str = "Social Arcade"
+    repo_id: str = Field(..., max_length=128)
+    action_type: str = Field("candle_lit", max_length=64)
+    visitor_location: str = Field("Social Arcade", max_length=128)
 
 
 class HybridSearchRequest(BaseModel):
-    repoId: str
-    queryText: str
+    repoId: str = Field(..., max_length=128)
+    queryText: str = Field(..., max_length=10_000)
 
 
 class GatekeeperVerifyRequest(BaseModel):
-    py2Source: str
-    py3Patched: str
-    goldenInput: str = ""
-    expectedStdout: str = ""
+    py2Source: str = Field(..., max_length=1_000_000)
+    py3Patched: str = Field(..., max_length=1_000_000)
+    goldenInput: str = Field("", max_length=10_000)
+    expectedStdout: str = Field("", max_length=500_000)
 
 
 # ============================================================================
@@ -476,9 +501,13 @@ def get_gatekeeper_audit(repo_id: str):
 
 
 @app.post("/api/feed/light-candle/{repo_id}")
-def feed_light_candle(repo_id: str, payload: Dict[str, Any] = None):
+def feed_light_candle(repo_id: str, payload: Optional[Dict[str, Any]] = None):
     storage = get_storage_engine()
-    storage.record_vigil_light(repo_id, action_type="candle_lit", visitor_location="Social Arcade")
+    repo = storage.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(status_code=404, detail=f"Repository '{repo_id}' not found in Crypt")
+    action = (payload or {}).get("action_type", "candle_lit")
+    storage.log_vigil_action(repo_id=repo_id, action_type=action, visitor_location="Social Arcade")
     updated = storage.get_vigil_counts(repo_id)
     return {"status": "CANDLE_LIT", "repo_id": repo_id, "vigil_counts": updated}
 
@@ -536,9 +565,14 @@ def get_temporal_sigkill_drill_log():
 
 @app.get("/api/audio/stream/{filename}")
 def stream_audio_file(filename: str):
-    cache_dir = "data/audio_cache"
-    file_path = os.path.join(cache_dir, filename)
-    if not os.path.exists(file_path):
+    cache_dir = os.path.abspath("data/audio_cache")
+    # Strictly sanitize against directory traversal (both POSIX / and Windows \)
+    safe_name = os.path.basename(filename.replace("\\", "/"))
+    if not safe_name.endswith(".mp3") or safe_name != filename:
+        raise HTTPException(status_code=400, detail="Invalid audio filename: path traversal or unsupported format")
+
+    file_path = os.path.abspath(os.path.join(cache_dir, safe_name))
+    if not file_path.startswith(cache_dir) or not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Audio file not found")
     return FileResponse(file_path, media_type="audio/mpeg")
 

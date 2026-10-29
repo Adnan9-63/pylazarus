@@ -18,6 +18,7 @@ Enforces 4 strict Invariants before accepting any AI resurrection patch:
 from __future__ import annotations
 
 import ast
+import html
 import os
 import re
 import subprocess
@@ -191,7 +192,8 @@ def verify_ast_integrity(py2_source: str, py3_patched: Optional[str]) -> ASTVeri
 
     try:
         py3_tree = ast.parse(py3_patched)
-    except SyntaxError as e:
+    except (SyntaxError, ValueError) as e:
+        err_msg = f"SyntaxError at line {getattr(e, 'lineno', '?')}: {getattr(e, 'msg', str(e))}" if isinstance(e, SyntaxError) else f"AST Parse Error: {e}"
         return ASTVerificationResult(
             passed=False,
             original_functions=[],
@@ -201,7 +203,7 @@ def verify_ast_integrity(py2_source: str, py3_patched: Optional[str]) -> ASTVeri
             surviving_classes=[],
             missing_classes=[],
             forbidden_calls=[],
-            syntax_error=f"SyntaxError at line {e.lineno}: {e.msg}",
+            syntax_error=err_msg,
         )
 
     # Extract symbols from py2_source (falling back to regex if py2 has syntax errors under py3)
@@ -213,7 +215,7 @@ def verify_ast_integrity(py2_source: str, py3_patched: Optional[str]) -> ASTVeri
         v_orig.visit(py2_tree)
         orig_functions = v_orig.functions
         orig_classes = v_orig.classes
-    except SyntaxError:
+    except (SyntaxError, ValueError):
         # Regex extraction fallback for un-transpiled Python 2 source
         orig_functions = re.findall(r"^\s*def\s+([a-zA-Z_]\w*)\s*\(", py2_source, re.MULTILINE)
         orig_classes = re.findall(r"^\s*class\s+([a-zA-Z_]\w*)\s*[\(:]", py2_source, re.MULTILINE)
@@ -316,16 +318,18 @@ def verify_claims_deterministically(
 
         passed = (len(reasons) == 0)
 
+        safe_claim_text = html.escape(claim.text.strip())
         if passed and source_excerpt is not None:
+            safe_source_id = html.escape(str(source_excerpt.id))
             rendered = (
-                f"<span class='claim-verified'>{claim.text.strip()} "
-                f"<span class='citation-badge' data-source='{source_excerpt.id}'>[{source_excerpt.id}]</span></span>"
+                f"<span class='claim-verified'>{safe_claim_text} "
+                f"<span class='citation-badge' data-source='{safe_source_id}'>[{safe_source_id}]</span></span>"
             )
         else:
-            reason_badge = ", ".join(reasons)
+            reason_badge = html.escape(", ".join(reasons))
             rendered = (
                 f"<del class='claim-struck' title='Blocked by Gatekeeper: {reason_badge}'>"
-                f"{claim.text.strip()}</del> <span class='gatekeeper-flag'>[Gatekeeper Struck: {reason_badge}]</span>"
+                f"{safe_claim_text}</del> <span class='gatekeeper-flag'>[Gatekeeper Struck: {reason_badge}]</span>"
             )
 
         html_parts.append(rendered)
@@ -389,7 +393,11 @@ def verify_sandbox_execution(
 
         cmd = [sys.executable, "-B", script_path]
         if golden_test_input.strip():
-            cmd.extend(golden_test_input.strip().split())
+            try:
+                import shlex
+                cmd.extend(shlex.split(golden_test_input.strip()))
+            except ValueError:
+                cmd.extend(golden_test_input.strip().split())
 
         try:
             proc = subprocess.run(

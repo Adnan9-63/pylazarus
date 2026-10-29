@@ -108,6 +108,16 @@ class StorageEngine:
     ) -> None:
         raise NotImplementedError
 
+    def record_vigil_light(
+        self,
+        repo_id: str,
+        action_type: str = "candle_lit",
+        visitor_location: str = "Local Sanctuary",
+        verified: bool = True,
+    ) -> None:
+        """Alias for log_vigil_action."""
+        return self.log_vigil_action(repo_id, action_type, visitor_location, verified)
+
     def get_vigil_counts(self, repo_id: Optional[str] = None) -> Dict[str, int]:
         raise NotImplementedError
 
@@ -450,6 +460,16 @@ class SQLiteStorageEngine(StorageEngine):
             ))
             conn.commit()
 
+    def record_vigil_light(
+        self,
+        repo_id: str,
+        action_type: str = "candle_lit",
+        visitor_location: str = "Local Sanctuary",
+        verified: bool = True,
+    ) -> None:
+        """Alias for log_vigil_action."""
+        self.log_vigil_action(repo_id, action_type, visitor_location, verified)
+
     def get_vigil_counts(self, repo_id: Optional[str] = None) -> Dict[str, int]:
         with self._get_connection() as conn:
             cur = conn.cursor()
@@ -684,6 +704,16 @@ class TigerPostgresStorageEngine(StorageEngine):
                     VALUES (NOW(), %s, %s, %s, %s)
                 """, (repo_id, visitor_location, action_type, verified))
             conn.commit()
+
+    def record_vigil_light(
+        self,
+        repo_id: str,
+        action_type: str = "candle_lit",
+        visitor_location: str = "Local Sanctuary",
+        verified: bool = True,
+    ) -> None:
+        """Alias for log_vigil_action."""
+        self.log_vigil_action(repo_id, action_type, visitor_location, verified)
 
     def get_vigil_counts(self, repo_id: Optional[str] = None) -> Dict[str, int]:
         with self._get_connection() as conn:
