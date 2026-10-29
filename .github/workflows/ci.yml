@@ -1,0 +1,61 @@
+name: PyLazarus CI & Reliability Verification
+
+on:
+  push:
+    branches: [ main, harden/hf26 ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-verify:
+    name: Test & Reliability Invariants
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Startup Self-Check & Reliability Diagnostics
+        run: |
+          python backend/self_check.py
+
+      - name: Seed Local SQLite Database
+        run: |
+          python backend/scripts/init_db_and_seed.py
+
+      - name: Run Complete Test Suite (35 Unit & Regression Tests)
+        run: |
+          python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Run Phase 2 Hostile Penetration Attack Suite
+        run: |
+          python -m unittest eval/stress_test_phase2.py -v
+
+      - name: Run 18-Repository Ablation Benchmark
+        run: |
+          python -m eval.run_benchmark
+
+      - name: Build React Frontend
+        working-directory: ./frontend
+        run: |
+          npm ci
+          npm run build
