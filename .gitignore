@@ -47,6 +47,11 @@ data/local_crypt.db-journal
 # Audio cache contents (keep folder with .gitkeep)
 data/audio_cache/*.mp3
 
+# Logs & scratch
+logs/
+*.log
+.write_test
+
 # OS
 .DS_Store
 Thumbs.db

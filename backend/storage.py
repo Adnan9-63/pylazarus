@@ -108,6 +108,16 @@ class StorageEngine:
     ) -> None:
         raise NotImplementedError
 
+    def record_vigil_light(
+        self,
+        repo_id: str,
+        action_type: str = "candle_lit",
+        visitor_location: str = "Local Sanctuary",
+        verified: bool = True,
+    ) -> None:
+        """Alias for log_vigil_action."""
+        return self.log_vigil_action(repo_id, action_type, visitor_location, verified)
+
     def get_vigil_counts(self, repo_id: Optional[str] = None) -> Dict[str, int]:
         raise NotImplementedError
 
@@ -199,7 +209,50 @@ class SQLiteStorageEngine(StorageEngine):
                     FOREIGN KEY (repo_id) REFERENCES dead_repositories(id) ON DELETE CASCADE
                 );
             """)
+            cur.execute("SELECT COUNT(*) FROM dead_repositories")
+            if cur.fetchone()[0] == 0:
+                self._auto_seed_from_fixtures(cur)
             conn.commit()
+
+    def _auto_seed_from_fixtures(self, cur: sqlite3.Cursor) -> None:
+        fixtures_path = os.path.join(os.path.dirname(__file__), "..", "data", "fixtures", "benchmark_18_repos.json")
+        if not os.path.exists(fixtures_path):
+            return
+        try:
+            with open(fixtures_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            repos = data.get("repositories", {})
+            now = datetime.now(timezone.utc).isoformat()
+            for r_id, r in repos.items():
+                cur.execute("""
+                    INSERT OR REPLACE INTO dead_repositories
+                    (id, repo_name, original_author, last_commit_year, category, dead_py2_code,
+                     resurrected_py3_code, polyfill_code, golden_test_input, expected_stdout,
+                     sha256_original, tabpfn_viability_score, status, created_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    r_id,
+                    r.get("repo_name", r_id),
+                    r.get("original_author", "unknown"),
+                    r.get("last_commit_year", 2011),
+                    r.get("category", "syntax_bitrot"),
+                    r.get("dead_py2_code", ""),
+                    r.get("resurrected_py3_code", ""),
+                    r.get("polyfill_code", ""),
+                    r.get("golden_test_input", ""),
+                    r.get("expected_stdout", ""),
+                    r.get("sha256_original", "0000"),
+                    r.get("tabpfn_viability_score", 0.5),
+                    r.get("status", "IN_CRYPT"),
+                    now,
+                ))
+                # Seed initial vigil candle
+                cur.execute("""
+                    INSERT INTO vigil_lights (lit_at, repo_id, visitor_location, action_type, gatekeeper_verified)
+                    VALUES (?, ?, ?, ?, 1)
+                """, (now, r_id, "Crypt Cryptographer", "candle_lit"))
+        except Exception:
+            pass
 
     def get_repository(self, repo_id: str) -> Optional[DeadRepositoryRecord]:
         with self._get_connection() as conn:
@@ -450,6 +503,16 @@ class SQLiteStorageEngine(StorageEngine):
             ))
             conn.commit()
 
+    def record_vigil_light(
+        self,
+        repo_id: str,
+        action_type: str = "candle_lit",
+        visitor_location: str = "Local Sanctuary",
+        verified: bool = True,
+    ) -> None:
+        """Alias for log_vigil_action."""
+        self.log_vigil_action(repo_id, action_type, visitor_location, verified)
+
     def get_vigil_counts(self, repo_id: Optional[str] = None) -> Dict[str, int]:
         with self._get_connection() as conn:
             cur = conn.cursor()
@@ -684,6 +747,16 @@ class TigerPostgresStorageEngine(StorageEngine):
                     VALUES (NOW(), %s, %s, %s, %s)
                 """, (repo_id, visitor_location, action_type, verified))
             conn.commit()
+
+    def record_vigil_light(
+        self,
+        repo_id: str,
+        action_type: str = "candle_lit",
+        visitor_location: str = "Local Sanctuary",
+        verified: bool = True,
+    ) -> None:
+        """Alias for log_vigil_action."""
+        self.log_vigil_action(repo_id, action_type, visitor_location, verified)
 
     def get_vigil_counts(self, repo_id: Optional[str] = None) -> Dict[str, int]:
         with self._get_connection() as conn:
