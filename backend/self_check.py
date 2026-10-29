@@ -88,6 +88,13 @@ def check_inference_readiness() -> Tuple[str, str, str]:
     return "LIVE", f"Ollama online at {router.ollama_base_url} (Chat: {router.chat_model})", "Ready for live open-weight inference."
 
 
+def check_frontend_bundle() -> Tuple[bool, str, str]:
+    dist_index = os.path.join(project_root, "frontend", "dist", "index.html")
+    if not os.path.exists(dist_index):
+        return False, "Frontend static bundle not found (raw API mode active)", "Run: cd frontend && npm install && npm run build"
+    return True, "Frontend WebAssembly Arcade bundle verified (ready to serve)", ""
+
+
 def check_filesystem_writable() -> Tuple[bool, str]:
     dirs = ["data", "data/fixtures", "data/audio_cache", "logs"]
     for d in dirs:
@@ -109,6 +116,7 @@ def run_full_self_check(silent: bool = False, target_port: int = 8000) -> bool:
     port_free, port_msg = check_port_free("127.0.0.1", target_port)
     fs_ok, fs_msg = check_filesystem_writable()
     db_ok, db_msg, db_fix = check_database_storage()
+    fe_ok, fe_msg, fe_fix = check_frontend_bundle()
     inf_mode, inf_msg, inf_rec = check_inference_readiness()
 
     all_passed = py_ok and deps_ok and fs_ok and db_ok
@@ -130,6 +138,10 @@ def run_full_self_check(silent: bool = False, target_port: int = 8000) -> bool:
         print(f"[{'PASS' if db_ok else 'FAIL'}] Persistence Engine: {db_msg}")
         if not db_ok:
             print(f"       Action: {db_fix}")
+
+        print(f"[{'PASS' if fe_ok else 'WARN'}] WebAssembly Arcade Bundle: {fe_msg}")
+        if not fe_ok:
+            print(f"       Action: {fe_fix}")
 
         print(f"[{'LIVE' if inf_mode == 'LIVE' else 'PASS'}] Open-Source AI Engine: {inf_msg}")
         print(f"       Note: {inf_rec}")
