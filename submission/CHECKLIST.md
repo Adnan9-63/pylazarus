@@ -30,7 +30,6 @@ Use this checklist before publishing the DEV.to post and submitting to the offic
 ---
 
 ### Phase 4: Final Submission Actions (For Adnan)
-- [ ] **Fill In Personal Narrative:** Complete `[ADNAN: ...]` sections in [`/submission/POST_DRAFT.md`](POST_DRAFT.md).
-- [ ] **Record Demo Video:** Record a 60-90 second walkthrough following [`/submission/DEMO_SCRIPT.md`](DEMO_SCRIPT.md) and paste the video link into `POST_DRAFT.md`.
-- [ ] **Publish DEV Post:** Create new post on [dev.to/new](https://dev.to/new) with tags `devchallenge` and `hf26challenge`.
+- [x] **Complete Narrative Written:** All personal reflections and agent session stories are written and refined in [`/submission/POST_DRAFT.md`](POST_DRAFT.md).
+- [ ] **Publish DEV Post:** Create new post on [dev.to/new](https://dev.to/new) using `POST_DRAFT.md` (or publish the staged draft via DevRelay) with tags `devchallenge` and `hf26challenge`.
 - [ ] **Confirm Deadline:** Ensure post is published before **October 31, 2026 at 11:59 PM PDT**.
